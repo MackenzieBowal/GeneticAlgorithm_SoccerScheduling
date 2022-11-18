@@ -3,10 +3,8 @@ import schedule
 import sys
 
 def parse(file):
-    try:
-        inputFile = open(file, 'r')
-    except:
-        sys.exit("The first command line argument must be a text file.")
+    try: inputFile = open(file, 'r')
+    except: sys.exit("The first command line argument must be a text file.")
     
     fileContent = inputFile.readlines()
     print(fileContent)
@@ -14,7 +12,7 @@ def parse(file):
     inputFile.close()
 
 #creates an empty schedule
-p1 = schedule.Schedule(5) #Note: 5 is a temp value, replace after writing parser
+p1 = schedule.Schedule()
 
 #add games and practices to schedule
 #format: addGame(day of the week, timeslot index, name of game)
@@ -29,9 +27,7 @@ p1.addPractice(4,4,'P4')
 p1.print()
 
 #read the input text file from the command line
-try:
-    file = sys.argv[1]
-except:
-    sys.exit("Must provide a program description in a text file.")
+try: file = sys.argv[1]
+except: sys.exit("Must provide a program description in a text file.")
 
 parse(file)

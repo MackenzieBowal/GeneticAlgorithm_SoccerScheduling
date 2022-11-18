@@ -1,27 +1,58 @@
 #schedule.py
-#Creates the schedule data structure
+#Contains the schedule data structure
 
+numDays = 5
+numTimeslots = 26
+
+#Stores a list of games and a list of practices at a specific time
+class Timeslot:
+    
+    def __init__(self):
+        self.gamemax = 2
+        self.practicemax = 2
+        self.games = []
+        self.practices = []
+    
+    def __str__(self):
+        return f'[{self.games},{self.practices}]'
+    
+    def addGame(self, g):
+        if len(self.games) < self.gamemax:
+            self.games.append(g)
+        else: print("Can't add another game at that time!")
+    
+    def addPractice(self, p):
+        if len(self.practices) < self.practicemax:
+            self.practices.append(p)
+        else: print("Can't add another practice at that time!")
+    
+    def setGamemax(self, m):
+        self.gamemax = m
+    
+    def setPracticemax(self, m):
+        self.practicemax = m
 
 class Schedule:
     
-    schedule = []
-    
-    def __init__(self, numTimeSlots):
-        self.numTimeSlots = numTimeSlots; #number of time slots determined from input file (varies for each test case)
+    def __init__(self):
+        self.schedule = []
         
-        for i in range(5): #Days in week
-        	Schedule.schedule.append([])
-        	for j in range(numTimeSlots): #Time slots
-        		Schedule.schedule[i].append([])
-        		for k in range(2): #Create game and practice lists
-        			Schedule.schedule[i][j].append([])
+        for day in range(numDays): #Days in week
+            self.schedule.append([])
+            for time in range(numTimeslots): #Timeslots at half-hour intervals from 8:00-20:30
+                self.schedule[day].append(Timeslot())
     
     def print(self):
-        for i in range(5):
-	        print(Schedule.schedule[i])
+        for day in range(numDays):
+            print('[', end='')
+            for time in range(numTimeslots):
+                if time == numTimeslots-1:
+                    print(str(self.schedule[day][time]), end='')
+                else: print(str(self.schedule[day][time]) + ', ', end='')
+            print(']')
 
-    def addGame(self, dayIdx, timeIdx, value):
-        Schedule.schedule[timeIdx][dayIdx][0].append(value)
+    def addGame(self, day, time, g):
+        self.schedule[day][time].addGame(g)
 
-    def addPractice(self, dayIdx, timeIdx, value):
-        Schedule.schedule[timeIdx][dayIdx][1].append(value)
+    def addPractice(self, day, time, p):
+        self.schedule[day][time].addPractice(p)
