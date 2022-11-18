@@ -1,6 +1,8 @@
 #schedule.py
 #Contains the schedule data structure
 
+from constants import *
+
 numDays = 5
 numTimeslots = 26
 
@@ -8,8 +10,8 @@ numTimeslots = 26
 class Timeslot:
     
     def __init__(self):
-        self.gamemax = 2
-        self.practicemax = 2
+        self.gamemax = 0
+        self.practicemax = 0
         self.games = []
         self.practices = []
     
@@ -17,20 +19,26 @@ class Timeslot:
         return f'[{self.games},{self.practices}]'
     
     def addGame(self, g):
-        if len(self.games) < self.gamemax:
-            self.games.append(g)
-        else: print("Can't add another game at that time!")
+        self.games.append(g)
     
     def addPractice(self, p):
-        if len(self.practices) < self.practicemax:
-            self.practices.append(p)
-        else: print("Can't add another practice at that time!")
+        self.practices.append(p)
     
     def setGamemax(self, m):
         self.gamemax = m
     
     def setPracticemax(self, m):
         self.practicemax = m
+        
+    def hasRoomForGame(self):
+        if len(self.games) < self.gamemax:
+            return True
+        else: return False
+        
+    def hasRoomForPractice(self):
+        if len(self.practices) < self.practicemax:
+            return True
+        else: return False
 
 class Schedule:
     
@@ -52,7 +60,54 @@ class Schedule:
             print(']')
 
     def addGame(self, day, time, g):
-        self.schedule[day][time].addGame(g)
+        if day == days['MO']:
+            if (self.schedule[days['MO']][time].hasRoomForGame() and
+                self.schedule[days['WE']][time].hasRoomForGame() and
+                self.schedule[days['FR']][time].hasRoomForGame()):
+                self.schedule[days['MO']][time].addGame(g)
+                self.schedule[days['WE']][time].addGame(g)
+                self.schedule[days['FR']][time].addGame(g)
+            else: print("Can't add another game at that time!")
+        else: #day == days['TU']
+            if (self.schedule[days['TU']][time].hasRoomForGame() and
+                self.schedule[days['TH']][time].hasRoomForGame()):
+                self.schedule[days['TU']][time].addGame(g)
+                self.schedule[days['TH']][time].addGame(g)
+            else: print("Can't add another game at that time!")
 
     def addPractice(self, day, time, p):
-        self.schedule[day][time].addPractice(p)
+        if day == days['MO']:
+            if (self.schedule[days['MO']][time].hasRoomForPractice() and
+                self.schedule[days['WE']][time].hasRoomForPractice()):
+                self.schedule[days['MO']][time].addPractice(p)
+                self.schedule[days['WE']][time].addPractice(p)
+            else: print("Can't add another practice at that time!")
+        elif day == days['TU']:
+            if (self.schedule[days['TU']][time].hasRoomForPractice() and
+                self.schedule[days['TH']][time].hasRoomForPractice()):
+                self.schedule[days['TU']][time].addPractice(p)
+                self.schedule[days['TH']][time].addPractice(p)
+            else: print("Can't add another practice at that time!")
+        else: #day == days['FR']
+            if self.schedule[days['FR']][time].hasRoomForPractice():
+                self.schedule[days['FR']][time].addPractice(p)
+            else: print("Can't add another practice at that time!")
+        
+    def setGamemax(self, day, time, m):
+        if day == days['MO']:
+            self.schedule[days['MO']][time].setGamemax(m)
+            self.schedule[days['WE']][time].setGamemax(m)
+            self.schedule[days['FR']][time].setGamemax(m)
+        else: #day == days['TU']
+            self.schedule[days['TU']][time].setGamemax(m)
+            self.schedule[days['TH']][time].setGamemax(m)
+        
+    def setPracticemax(self, day, time, m):
+        if day == days['MO']:
+            self.schedule[days['MO']][time].setPracticemax(m)
+            self.schedule[days['WE']][time].setPracticemax(m)
+        elif day == days['TU']:
+            self.schedule[days['TU']][time].setPracticemax(m)
+            self.schedule[days['TH']][time].setPracticemax(m)
+        else: #day == days['FR']
+            self.schedule[days['FR']][time].setPracticemax(m)
