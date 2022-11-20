@@ -27,8 +27,14 @@ class Timeslot:
     def setGamemax(self, m):
         self.gamemax = m
     
+    def setGamemin(self, m):
+        self.gamemin = m
+    
     def setPracticemax(self, m):
         self.practicemax = m
+    
+    def setPracticemin(self, m):
+        self.practicemin = m
         
     def hasRoomForGame(self):
         if len(self.games) < self.gamemax:
@@ -98,16 +104,65 @@ class Schedule:
             self.schedule[days['MO']][time].setGamemax(m)
             self.schedule[days['WE']][time].setGamemax(m)
             self.schedule[days['FR']][time].setGamemax(m)
+            
+            self.schedule[days['MO']][time+1].setGamemax(m) #set an hour for game on M,W,F
+            self.schedule[days['WE']][time+1].setGamemax(m)
+            self.schedule[days['FR']][time+1].setGamemax(m)
         else: #day == days['TU']
             self.schedule[days['TU']][time].setGamemax(m)
             self.schedule[days['TH']][time].setGamemax(m)
+            
+            self.schedule[days['TU']][time+2].setGamemax(m) #set an hour and half for game on T,TH
+            self.schedule[days['TH']][time+2].setGamemax(m)
+    
+    def setGamemin(self, day, time, m):
+        if day == days['MO']:
+            self.schedule[days['MO']][time].setGamemin(m)
+            self.schedule[days['WE']][time].setGamemin(m)
+            self.schedule[days['FR']][time].setGamemin(m)
+            
+            self.schedule[days['MO']][time+1].setGamemin(m)
+            self.schedule[days['WE']][time+1].setGamemin(m)
+            self.schedule[days['FR']][time+1].setGamemin(m)
+        else: #day == days['TU']
+            self.schedule[days['TU']][time].setGamemin(m)
+            self.schedule[days['TH']][time].setGamemin(m)
+            
+            self.schedule[days['TU']][time+2].setGamemin(m)
+            self.schedule[days['TH']][time+2].setGamemin(m)
         
     def setPracticemax(self, day, time, m):
         if day == days['MO']:
             self.schedule[days['MO']][time].setPracticemax(m)
             self.schedule[days['WE']][time].setPracticemax(m)
+            
+            self.schedule[days['MO']][time+1].setPracticemax(m)
+            self.schedule[days['WE']][time+1].setPracticemax(m)
         elif day == days['TU']:
             self.schedule[days['TU']][time].setPracticemax(m)
             self.schedule[days['TH']][time].setPracticemax(m)
+            
+            self.schedule[days['TU']][time+2].setPracticemax(m)
+            self.schedule[days['TH']][time+2].setPracticemax(m)
         else: #day == days['FR']
             self.schedule[days['FR']][time].setPracticemax(m)
+            
+            self.schedule[days['FR']][time+4].setPracticemax(m)
+     
+    def setPracticemin(self, day, time, m):
+        if day == days['MO']:
+            self.schedule[days['MO']][time].setPracticemin(m)
+            self.schedule[days['WE']][time].setPracticemin(m)
+            
+            self.schedule[days['MO']][time+1].setPracticemin(m)
+            self.schedule[days['WE']][time+1].setPracticemin(m)
+        elif day == days['TU']:
+            self.schedule[days['TU']][time].setPracticemin(m)
+            self.schedule[days['TH']][time].setPracticemin(m)
+            
+            self.schedule[days['TU']][time+2].setPracticemin(m)
+            self.schedule[days['TH']][time+2].setPracticemin(m)
+        else: #day == days['FR']
+            self.schedule[days['FR']][time].setPracticemin(m)
+            
+            self.schedule[days['FR']][time+4].setPracticemin(m)
