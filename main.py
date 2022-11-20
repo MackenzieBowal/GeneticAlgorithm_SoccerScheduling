@@ -10,12 +10,9 @@ def parse(file):
     
     fileContent = inputFile.read()
     fileContent = fileContent.splitlines()
-    print(fileContent)
     
     for i in range(len(fileContent)):
         fileContent[i] = fileContent[i].strip()
-    
-    print(fileContent)
     
     inputFile.close()
     
@@ -58,7 +55,6 @@ def parse(file):
                 time = times[components[1]]
                 gameMax = int(components[2])
                 gameMin = int(components[3])
-                print(day, time, gameMax, gameMin)
                 p1.setGamemax(day, time, gameMax)
                 p1.setGamemin(day, time, gameMin)
                 #Note: changed notation in setGamemax and setPracticemax in schedule.py to accomodate strings as inputs rather than integers
@@ -70,7 +66,6 @@ def parse(file):
                 time = times[components[1]]
                 pracMax = int(components[2])
                 pracMin = int(components[3])
-                print(day, time, pracMax, pracMin)
                 p1.setPracticemax(day, time, pracMax)
                 p1.setPracticemin(day, time, pracMin)
             
@@ -85,11 +80,39 @@ def parse(file):
                 comp1 = components[0].strip()
                 comp2 = components[1].strip()
                 notCompatible.append(tuple([comp1, comp2]))
+                
+            elif category == "U":
+                components = line.split(',')
+                game = components[0].strip()
+                day = components[1].strip()
+                time = components[2].strip()
+                unwanted.append(tuple([game, day, time]))
+                
+            elif category == "Pref":
+                components = line.split(',')
+                day = components[0].strip()
+                time = components[1].strip()
+                game = components[2].strip()
+                value = components[3].strip()
+                preferences.append(tuple([day, time, game, value]))
+                
+            elif category == "Pair":
+                components = line.split(',')
+                game1 = components[0].strip()
+                game2 = components[1].strip()
+                pair.append(tuple([game1, game2]))
+                
+            elif category == "PA":
+                components = line.split(',')
+                game = components[0].strip()
+                day = components[1].strip()
+                time = components[2].strip()
+                partAssign.append(tuple([game, day, time]))
 
 #creates an empty schedule
 p1 = schedule.Schedule()
 
-p1.setGamemax(days['MO'],times['8:00'],1)
+p1.setGamemax(days['TU'],times['8:00'],1)
 p1.setPracticemax(days['TU'],times['9:30'],2)
 p1.setGamemax(days['MO'],times['9:00'],1)
 p1.setPracticemax(days['MO'],times['10:00'],1)
@@ -98,7 +121,7 @@ p1.setPracticemax(days['FR'],times['15:00'],1)
 #add games and practices to schedule
 #format: addGame(day of the week, timeslot index, name of game)
 #		 addpractice(day of the week, timeslot index, name of practice)
-p1.addGame(days['MO'],times['8:00'],'G2')
+p1.addGame(days['TU'],times['8:00'],'G2')
 p1.addPractice(days['TU'],times['9:30'],'P2')
 p1.addGame(days['MO'],times['9:00'],'G1')
 p1.addPractice(days['TU'],times['9:30'],'P3')
@@ -115,9 +138,17 @@ except: sys.exit("Must provide a program description in a text file.")
 gamesList = []
 pracList = []
 notCompatible = []
+unwanted = []
+preferences = []
+pair = []
+partAssign = []
 
 parse(file)
 
-print(gamesList)
-print(pracList)
-print(notCompatible)
+print("Games:", gamesList)
+print("Practices:", pracList)
+print("Not compatible:", notCompatible)
+print("Unwanted:", unwanted)
+print("Preferences:", preferences)
+print("Pair:", pair)
+print("Partial assignments:", partAssign)
