@@ -12,6 +12,8 @@ class Timeslot:
     def __init__(self):
         self.gamemax = 0
         self.practicemax = 0
+        self.gamemin = 0
+        self.practicemin = 0
         self.games = []
         self.practices = []
     
@@ -50,6 +52,7 @@ class Schedule:
     
     def __init__(self):
         self.schedule = []
+        self.assignment = []
         
         for day in range(numDays): #Days in week
             self.schedule.append([])
@@ -64,55 +67,76 @@ class Schedule:
                     print(str(self.schedule[day][time]), end='')
                 else: print(str(self.schedule[day][time]) + ', ', end='')
             print(']')
+        print(sorted(self.assignment))
 
     def addGame(self, day, time, g):
+        add = True
         if day == days['MO']:
             for i in range(0,2): #games on M,W,F are an hour long
-                if (self.schedule[days['MO']][time+i].hasRoomForGame() and
-                    self.schedule[days['WE']][time+i].hasRoomForGame() and
-                    self.schedule[days['FR']][time+i].hasRoomForGame()):
-                    self.schedule[days['MO']][time+i].addGame(g)
-                    self.schedule[days['WE']][time+i].addGame(g)
-                    self.schedule[days['FR']][time+i].addGame(g)
-                else:
+                if (not self.schedule[days['MO']][time+i].hasRoomForGame() or
+                    not self.schedule[days['WE']][time+i].hasRoomForGame() or
+                    not self.schedule[days['FR']][time+i].hasRoomForGame()):
+                    add = False
                     print("Can't add another game at that time!")
                     break
+            if add:
+                self.schedule[days['MO']][time+i].addGame(g)
+                self.schedule[days['WE']][time+i].addGame(g)
+                self.schedule[days['FR']][time+i].addGame(g)
+                
+                self.assignment.append(tuple([g,day,time]))
+
         else: #day == days['TU']
             for i in range(0,3): #games on T,TH are an hour and a half long
-                if (self.schedule[days['TU']][time+i].hasRoomForGame() and
-                    self.schedule[days['TH']][time+i].hasRoomForGame()):
-                    self.schedule[days['TU']][time+i].addGame(g)
-                    self.schedule[days['TH']][time+i].addGame(g)
-                else:
+                if (not self.schedule[days['TU']][time+i].hasRoomForGame() or
+                    not self.schedule[days['TH']][time+i].hasRoomForGame()):
+                    add = False
                     print("Can't add another game at that time!")
                     break
+            if add:
+                self.schedule[days['TU']][time+i].addGame(g)
+                self.schedule[days['TH']][time+i].addGame(g)
+                
+                self.assignment.append(tuple([g,day,time]))
 
     def addPractice(self, day, time, p):
+        add = True
         if day == days['MO']:
             for i in range(0,2): #practices on M,W are an hour long
-                if (self.schedule[days['MO']][time+i].hasRoomForPractice() and
-                    self.schedule[days['WE']][time+i].hasRoomForPractice()):
-                    self.schedule[days['MO']][time+i].addPractice(p)
-                    self.schedule[days['WE']][time+i].addPractice(p)
-                else:
+                if (not self.schedule[days['MO']][time+i].hasRoomForPractice() or
+                    not self.schedule[days['WE']][time+i].hasRoomForPractice()):
+                    add = False
                     print("Can't add another practice at that time!")
                     break
+            if add:
+                self.schedule[days['MO']][time+i].addPractice(p)
+                self.schedule[days['WE']][time+i].addPractice(p)
+                
+                self.assignment.append(tuple([p,day,time]))
+
         elif day == days['TU']:
             for i in range(0,2): #practices on T,TH are an hour long
-                if (self.schedule[days['TU']][time+i].hasRoomForPractice() and
-                    self.schedule[days['TH']][time+i].hasRoomForPractice()):
-                    self.schedule[days['TU']][time+i].addPractice(p)
-                    self.schedule[days['TH']][time+i].addPractice(p)
-                else:
+                if (not self.schedule[days['TU']][time+i].hasRoomForPractice() or
+                    not self.schedule[days['TH']][time+i].hasRoomForPractice()):
+                    add = False
                     print("Can't add another practice at that time!")
                     break
+            if add:
+                self.schedule[days['TU']][time+i].addPractice(p)
+                self.schedule[days['TH']][time+i].addPractice(p)
+                
+                self.assignment.append(tuple([p,day,time]))
+
         else: #day == days['FR']
             for i in range(0,4): #practices on F are two hours long
-                if self.schedule[days['FR']][time+i].hasRoomForPractice():
-                    self.schedule[days['FR']][time+i].addPractice(p)
-                else:
+                if not self.schedule[days['FR']][time+i].hasRoomForPractice():
+                    add = False
                     print("Can't add another practice at that time!")
                     break
+            if add:
+                self.schedule[days['FR']][time+i].addPractice(p)
+                
+                self.assignment.append(tuple([p,day,time]))
         
     def setGamemax(self, day, time, m):
         if day == days['MO']:

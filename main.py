@@ -93,7 +93,7 @@ def parse(file):
                 day = components[0].strip()
                 time = components[1].strip()
                 game = components[2].strip()
-                value = components[3].strip()
+                value = int(components[3].strip())
                 preferences.append(tuple([day, time, game, value]))
                 
             elif category == "Pair":
@@ -109,8 +109,47 @@ def parse(file):
                 time = components[2].strip()
                 partAssign.append(tuple([game, day, time]))
 
+def eval(assign):
+    return evalMinFilled(assign)*wMinFilled + evalPref(assign)*wPref + \
+    evalPair(assign)*wPair + evalSecDiff(assign)*wSecDiff
+
+def evalMinFilled(assign):
+    penalty = 0
+    for day in range(schedule.numDays):
+        for time in range(schedule.numTimeslots):
+            slot = assign[day][time]
+            if len(slot.games) < slot.gamemin:
+                penalty += penGameMin * (slot.gamemin - len(slot.games))
+            if len(slot.practices) < slot.practicemin:
+                penalty += penPracticeMin * (slot.practicemin - len(slot.practices))
+    return penalty
+    
+def evalPref(assign):
+    penalty = 0
+    for t in preferences:
+        if (t[2] not in assign[t[0]][t[1]].games and t[2] not in assign[t[0]][t[1]].practices):
+            penalty += t[3]
+    return penalty
+    
+def evalPair(assign): #to be finished
+    return
+    
+def evalSecDiff(assign): #to be finished
+    return
+
+#define soft constraint weightings and penalty values
+wMinFilled = sys.argv[2]
+wPref = sys.argv[3]
+wPair = sys.argv[4]
+wSecDiff = sys.argv[5]
+penGameMin = sys.argv[6]
+penPracticeMin = sys.argv[7]
+penNotPaired = sys.argv[8]
+penSection = sys.argv[9]
+
 #creates an empty schedule
 p1 = schedule.Schedule()
+evalPair(p1)
 
 p1.setGamemax(days['TU'],times['8:00'],1)
 p1.setPracticemax(days['TU'],times['9:30'],2)
