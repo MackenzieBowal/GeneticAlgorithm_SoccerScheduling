@@ -30,7 +30,6 @@ def parse(file):
     category = "";
     for line in fileContent:
         if not (line == ''):
-            #Tried using match case notation here but it would only work with python 3.10, check if lab computers have python 3.10 installed
             if(line == "Game slots:"):
                 category = "GS"
                 continue
@@ -68,7 +67,6 @@ def parse(file):
                 gameMin = int(components[3])
                 sched.setGamemax(day, time, gameMax)
                 sched.setGamemin(day, time, gameMin)
-                #Note: changed notation in setGamemax and setPracticemax in schedule.py to accomodate strings as inputs rather than integers
             
             elif category == "PS":
                 temp = line.replace(' ', '')
