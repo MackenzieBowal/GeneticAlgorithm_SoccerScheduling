@@ -1,9 +1,18 @@
 #main.py
 
 import sys
+import copy
 import schedule
 from constants import *
 
+"""
+parse()
+Input: One text file
+Returns: One soccer schedule with max/min game and practice values set for each time slot
+            DO NOT MODIFY THIS SCHEDULE!
+Also assigns any partial assignments and populates a list of games, a list of practices,
+    and lists for all soft constraints
+"""
 def parse(file):
     try: inputFile = open(file, 'r')
     except: sys.exit("The first command line argument must be a text file.")
@@ -15,6 +24,8 @@ def parse(file):
         fileContent[i] = fileContent[i].strip()
     
     inputFile.close()
+    
+    sched = schedule.Schedule()
     
     category = "";
     for line in fileContent:
@@ -55,8 +66,8 @@ def parse(file):
                 time = times[components[1]]
                 gameMax = int(components[2])
                 gameMin = int(components[3])
-                p1.setGamemax(day, time, gameMax)
-                p1.setGamemin(day, time, gameMin)
+                sched.setGamemax(day, time, gameMax)
+                sched.setGamemin(day, time, gameMin)
                 #Note: changed notation in setGamemax and setPracticemax in schedule.py to accomodate strings as inputs rather than integers
             
             elif category == "PS":
@@ -66,8 +77,8 @@ def parse(file):
                 time = times[components[1]]
                 pracMax = int(components[2])
                 pracMin = int(components[3])
-                p1.setPracticemax(day, time, pracMax)
-                p1.setPracticemin(day, time, pracMin)
+                sched.setPracticemax(day, time, pracMax)
+                sched.setPracticemin(day, time, pracMin)
             
             elif category == "G":
                 gamesList.append(line)
@@ -107,7 +118,14 @@ def parse(file):
                 game = components[0].strip()
                 day = components[1].strip()
                 time = components[2].strip()
-                partAssign.append(tuple([game, day, time]))
+                if "PRC" in game:
+                    sched.addPractice(days[day], times[time], game)
+                    pracList.remove(game)
+                else:
+                    sched.addGame(days[day], times[time], game)
+                    gamesList.remove(game)
+                partassign.append(tuple([game, day, time]))
+    return sched
 
 def eval(assign):
     return evalMinFilled(assign)*wMinFilled + evalPref(assign)*wPref + \
@@ -131,10 +149,10 @@ def evalPref(assign):
             penalty += t[3]
     return penalty
     
-def evalPair(assign): #to be finished
+def evalPair(assign): #TODO Allison or Sahithi
     return
     
-def evalSecDiff(assign): #to be finished
+def evalSecDiff(assign): #TODO Allison or Sahithi
     return
 
 #define soft constraint weightings and penalty values
@@ -147,47 +165,55 @@ penPracticeMin = sys.argv[7]
 penNotPaired = sys.argv[8]
 penSection = sys.argv[9]
 
-#creates an empty schedule
-p1 = schedule.Schedule()
-evalPair(p1)
-
-p1.setGamemax(days['TU'],times['8:00'],1)
-p1.setPracticemax(days['TU'],times['9:30'],2)
-p1.setGamemax(days['MO'],times['9:00'],1)
-p1.setPracticemax(days['MO'],times['10:00'],1)
-p1.setPracticemax(days['FR'],times['15:00'],1)
-
-#add games and practices to schedule
-#format: addGame(day of the week, timeslot index, name of game)
-#		 addpractice(day of the week, timeslot index, name of practice)
-p1.addGame(days['TU'],times['8:00'],'G2')
-p1.addPractice(days['TU'],times['9:30'],'P2')
-p1.addGame(days['MO'],times['9:00'],'G1')
-p1.addPractice(days['TU'],times['9:30'],'P3')
-p1.addPractice(days['MO'],times['10:00'],'P4')
-p1.addPractice(days['FR'],times['15:00'],'P1')
-
-#prints the schedule
-p1.print()
-
-#read the input text file from the command line
-try: file = sys.argv[1]
-except: sys.exit("Must provide a program description in a text file.")
-
+#define lists to store input from the text file
 gamesList = []
 pracList = []
 notCompatible = []
 unwanted = []
 preferences = []
 pair = []
-partAssign = []
+partassign = []
 
-parse(file)
+#read the input text file from the command line
+try: file = sys.argv[1]
+except: sys.exit("Must provide a program description in a text file.")
 
+sched = parse(file)
+
+sched.print()
 print("Games:", gamesList)
 print("Practices:", pracList)
 print("Not compatible:", notCompatible)
 print("Unwanted:", unwanted)
 print("Preferences:", preferences)
 print("Pair:", pair)
-print("Partial assignments:", partAssign)
+print("Partial assignments:", partassign)
+
+"""
+#EXAMPLE: CREATING A SCHEDULE
+"""
+s1 = sched.newSchedule() #calling newSchedule() on the template schedule created by parse()
+
+#add games and practices to schedule
+#format: addGame(day of the week, timeslot index, name of game)
+#		 addPractice(day of the week, timeslot index, name of practice)
+for game in gamesList:
+    for day in range(schedule.numDays):
+        for time in range(schedule.numTimeslots):
+            if s1.addGame(day, time, game):
+                break
+        else: continue
+        break
+
+for practice in pracList:
+    for day in range(schedule.numDays):
+        for time in range(schedule.numTimeslots):
+            if s1.addPractice(day, time, practice):
+                break
+        else: continue
+        break
+
+s1.print() #prints the schedule
+"""
+END EXAMPLE
+"""

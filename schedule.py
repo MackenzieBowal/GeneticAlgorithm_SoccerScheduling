@@ -1,12 +1,16 @@
 #schedule.py
 #Contains the schedule data structure
 
+import copy
 from constants import *
 
 numDays = 5
 numTimeslots = 26
-
-#Stores a list of games and a list of practices at a specific time
+"""
+Timeslot class: One time slot
+* Stores a list of games and a list of practices at a specific time
+* THIS CLASS IS ONLY USED WITHIN Schedule
+"""
 class Timeslot:
     
     def __init__(self):
@@ -48,6 +52,20 @@ class Timeslot:
             return True
         else: return False
 
+"""
+Schedule class: One soccer schedule
+* DO NOT use __init__! The constructor is used by main.py/parse() which creates a template schedule
+                        with max/min game and practice values for each time slot
+* To create a new soccer schedule: Use Schedule.newSchedule()
+                                    This creates a deep copy of the template schedule which can then
+                                    be populated with games/practices
+* Use Schedule.addGame() and Schedule.addPractice() to add games/practices to a soccer schedule
+* The setGamemax() etc. functions are only used by the parser. This information does not change after
+    the input file has been parsed
+* print() prints the schedule as a 4-dimensional list: schedule[day[time[game/practice]]]
+* See the example in main.py for how to create a schedule and populate it with a basic arrangement of
+    games and practices
+"""
 class Schedule:
     
     def __init__(self):
@@ -60,14 +78,21 @@ class Schedule:
                 self.schedule[day].append(Timeslot())
     
     def print(self):
+        print('[', end='')
         for day in range(numDays):
             print('[', end='')
             for time in range(numTimeslots):
                 if time == numTimeslots-1:
                     print(str(self.schedule[day][time]), end='')
                 else: print(str(self.schedule[day][time]) + ', ', end='')
-            print(']')
+            if day == numDays-1:
+                print(']', end='')
+            else: print(']')
+        print(']')
         print(sorted(self.assignment))
+
+    def newSchedule(self):
+        return copy.deepcopy(self)
 
     def addGame(self, day, time, g):
         add = True
@@ -77,27 +102,30 @@ class Schedule:
                     not self.schedule[days['WE']][time+i].hasRoomForGame() or
                     not self.schedule[days['FR']][time+i].hasRoomForGame()):
                     add = False
-                    print("Can't add another game at that time!")
                     break
             if add:
-                self.schedule[days['MO']][time+i].addGame(g)
-                self.schedule[days['WE']][time+i].addGame(g)
-                self.schedule[days['FR']][time+i].addGame(g)
+                for i in range(0,2):
+                    self.schedule[days['MO']][time+i].addGame(g)
+                    self.schedule[days['WE']][time+i].addGame(g)
+                    self.schedule[days['FR']][time+i].addGame(g)
                 
                 self.assignment.append(tuple([g,day,time]))
+                return True
 
         else: #day == days['TU']
             for i in range(0,3): #games on T,TH are an hour and a half long
                 if (not self.schedule[days['TU']][time+i].hasRoomForGame() or
                     not self.schedule[days['TH']][time+i].hasRoomForGame()):
                     add = False
-                    print("Can't add another game at that time!")
                     break
             if add:
-                self.schedule[days['TU']][time+i].addGame(g)
-                self.schedule[days['TH']][time+i].addGame(g)
+                for i in range(0,3):
+                    self.schedule[days['TU']][time+i].addGame(g)
+                    self.schedule[days['TH']][time+i].addGame(g)
                 
                 self.assignment.append(tuple([g,day,time]))
+                return True
+        return False
 
     def addPractice(self, day, time, p):
         add = True
@@ -106,37 +134,41 @@ class Schedule:
                 if (not self.schedule[days['MO']][time+i].hasRoomForPractice() or
                     not self.schedule[days['WE']][time+i].hasRoomForPractice()):
                     add = False
-                    print("Can't add another practice at that time!")
                     break
             if add:
-                self.schedule[days['MO']][time+i].addPractice(p)
-                self.schedule[days['WE']][time+i].addPractice(p)
+                for i in range(0,2):
+                    self.schedule[days['MO']][time+i].addPractice(p)
+                    self.schedule[days['WE']][time+i].addPractice(p)
                 
                 self.assignment.append(tuple([p,day,time]))
+                return True
 
         elif day == days['TU']:
             for i in range(0,2): #practices on T,TH are an hour long
                 if (not self.schedule[days['TU']][time+i].hasRoomForPractice() or
                     not self.schedule[days['TH']][time+i].hasRoomForPractice()):
                     add = False
-                    print("Can't add another practice at that time!")
                     break
             if add:
-                self.schedule[days['TU']][time+i].addPractice(p)
-                self.schedule[days['TH']][time+i].addPractice(p)
+                for i in range(0,2):
+                    self.schedule[days['TU']][time+i].addPractice(p)
+                    self.schedule[days['TH']][time+i].addPractice(p)
                 
                 self.assignment.append(tuple([p,day,time]))
+                return True
 
         else: #day == days['FR']
             for i in range(0,4): #practices on F are two hours long
                 if not self.schedule[days['FR']][time+i].hasRoomForPractice():
                     add = False
-                    print("Can't add another practice at that time!")
                     break
             if add:
-                self.schedule[days['FR']][time+i].addPractice(p)
+                for i in range(0,4):
+                    self.schedule[days['FR']][time].addPractice(p)
                 
                 self.assignment.append(tuple([p,day,time]))
+                return True
+        return False
         
     def setGamemax(self, day, time, m):
         if day == days['MO']:
