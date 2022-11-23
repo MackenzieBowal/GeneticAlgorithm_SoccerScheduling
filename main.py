@@ -147,11 +147,26 @@ def evalPref(assign):
             penalty += t[3]
     return penalty
     
-def evalPair(assign): #TODO Allison or Sahithi
-    return
+def evalPair(assign):
+    penalty = 0
+    for day in range(schedule.numDays):
+        for time in range(schedule.numTimeslots):
+            for p in pair:
+                if (p[0] in assign[day][time].games or p[0] in assign[day][time].practices) and (p[1] not in assign[day][time].games or p[1] not in assign[day][time].practices):
+                    penalty += penNotPaired
+    return penalty
     
-def evalSecDiff(assign): #TODO Allison or Sahithi
-    return
+def evalSecDiff(assign):
+    penalty = 0
+    for day in range(schedule.numDays):
+        for time in range(schedule.numTimeslots):
+            for i in range(len(assign[day][time].games)):
+                temp = assign[day][time].games[i].split()
+                for j in range(i+1,len(assign[day][time].games)):
+                    temp1 = assign[day][time].games[j].split()
+                    if temp[1] == temp1[1]:
+                        penalty += penSection
+    return penalty
 
 #define soft constraint weightings and penalty values
 wMinFilled = sys.argv[2]
