@@ -164,7 +164,7 @@ class Schedule:
                     break
             if add:
                 for i in range(0,4):
-                    self.schedule[days['FR']][time].addPractice(p)
+                    self.schedule[days['FR']][time+i].addPractice(p)
                 
                 self.assignment.append(tuple([p,day,time]))
                 return True
