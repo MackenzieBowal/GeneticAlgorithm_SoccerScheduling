@@ -51,6 +51,27 @@ class Timeslot:
         if len(self.practices) < self.practicemax:
             return True
         else: return False
+    
+    def getGameMax(self):
+        return self.gamemax
+
+    def getPracMax(self):
+        return self.practicemax
+
+    def getGameMin(self):
+        return self.gamemin
+
+    def getPracMin(self):
+        return self.practicemin
+
+    def getGames(self):
+        return self.games
+
+    def getPractices(self):
+        return self.practices
+
+
+
 
 """
 Schedule class: One soccer schedule
@@ -93,6 +114,12 @@ class Schedule:
 
     def newSchedule(self):
         return copy.deepcopy(self)
+    
+    def getAssignment(self):
+        return self.assignment
+
+    def getSchedule(self):
+        return self.schedule
 
     def addGame(self, day, time, g):
         add = True
@@ -189,8 +216,8 @@ class Schedule:
                 self.schedule[days['FR']][time+i].setGamemin(m)
         else: #day == days['TU']
             for i in range(0,3): #set an hour and half for game on T,TH
-                self.schedule[days['TU']][time+i].setGamemax(m)
-                self.schedule[days['TH']][time+i].setGamemax(m)
+                self.schedule[days['TU']][time+i].setGamemin(m)
+                self.schedule[days['TH']][time+i].setGamemin(m)
         
     def setPracticemax(self, day, time, m):
         if day == days['MO']:
