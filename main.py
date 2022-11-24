@@ -3,6 +3,8 @@
 import sys
 import copy
 import schedule
+import node
+from repairORTree import*
 from constants import *
 
 """
@@ -57,7 +59,7 @@ def parse(file):
             elif(line == "Partial assignments:"):
                 category = "PA"
                 continue
-            
+
             if category == "GS":
                 temp = line.replace(' ', '')
                 components = temp.split(",")
@@ -67,6 +69,7 @@ def parse(file):
                 gameMin = int(components[3])
                 sched.setGamemax(day, time, gameMax)
                 sched.setGamemin(day, time, gameMin)
+                validGameSlots.append((day, time))
             
             elif category == "PS":
                 temp = line.replace(' ', '')
@@ -77,6 +80,7 @@ def parse(file):
                 pracMin = int(components[3])
                 sched.setPracticemax(day, time, pracMax)
                 sched.setPracticemin(day, time, pracMin)
+                validPracSlots.append((day, time))
             
             elif category == "G":
                 gamesList.append(line)
@@ -179,6 +183,8 @@ penNotPaired = sys.argv[8]
 penSection = sys.argv[9]
 
 #define lists to store input from the text file
+validGameSlots = [] #contains tuples (day, time) for valid ones based on input file - day, time are ints from constants.py
+validPracSlots = [] #contains tuples (day, time) for valid ones based on input file - day, time are ints from constants.py
 gamesList = []
 pracList = []
 notCompatible = []
@@ -213,16 +219,20 @@ s1 = sched.newSchedule() #calling newSchedule() on the template schedule created
 for game in gamesList:
     for day in range(schedule.numDays):
         for time in range(schedule.numTimeslots):
-            if s1.addGame(day, time, game):
-                break
+            if ((day, time) in validGameSlots):
+                #if the time slot is in the list of valid ones, we can use it, check if (day, time) in validGameSlots
+                if s1.addGame(day, time, game):
+                    break
         else: continue
         break
 
 for practice in pracList:
     for day in range(schedule.numDays):
         for time in range(schedule.numTimeslots):
-            if s1.addPractice(day, time, practice):
-                break
+            if ((day, time) in validPracSlots):
+                #if the time slot is in the list of valid ones, we can use it, check if (day, time) in validPracSlots
+                if s1.addPractice(day, time, practice):
+                    break
         else: continue
         break
 
@@ -230,3 +240,8 @@ s1.print() #prints the schedule
 """
 END EXAMPLE
 """
+repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
+if (repairedSchedule == None):
+    print("Exception - no valid schedule found")
+else:
+    repairedSchedule.print()
