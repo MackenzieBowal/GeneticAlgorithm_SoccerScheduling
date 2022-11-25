@@ -7,6 +7,10 @@ import node
 from repairORTree import*
 from constants import *
 
+#Sample Cmd Line
+#python main.py test.txt 1 0 1 0 10 10 10 10
+#python main.py test2.txt 1 0 1 0 10 10 10 10
+
 """
 parse()
 Input: One text file
@@ -209,7 +213,7 @@ print("Pair:", pair)
 print("Partial assignments:", partassign)
 
 """
-#EXAMPLE: CREATING A SCHEDULE
+#EXAMPLE 1: CREATING A SCHEDULE
 """
 s1 = sched.newSchedule() #calling newSchedule() on the template schedule created by parse()
 
@@ -236,12 +240,35 @@ for practice in pracList:
         else: continue
         break
 
+print("this is the potentially invalid schedule that we want to repair")
 s1.print() #prints the schedule
 """
 END EXAMPLE
 """
+
+"""
+#EXAMPLE 2: CREATING A RANDOM, VALID SCHEDULE
+"""
 repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
 if (repairedSchedule == None):
-    print("Exception - no valid schedule found")
+    print("Exception 1- no valid schedule found")
 else:
+    print("this is a random, valid schedule")
     repairedSchedule.print()
+"""
+END EXAMPLE
+"""
+
+"""
+#EXAMPLE 3: REPAIRING A SCHEDULE
+"""
+repairedSchedule = repairSchedule(sched, s1, True, validGameSlots, validPracSlots, gamesList, pracList)
+if (repairedSchedule == None):
+   print("Exception 2- no valid schedule found")
+else:
+   print("this is the repaired schedule after taking the invalid one")
+   repairedSchedule.print()
+"""
+END EXAMPLE
+"""
+
