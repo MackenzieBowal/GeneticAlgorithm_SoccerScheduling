@@ -10,7 +10,7 @@ Practice slots:
 MO, 9:00, 2, 1 
 TU, 14:00,1,0 
 TU, 17:00, 1, 1 
- 
+
 Games: 
 CMSA U8T1 DIV 01 
 CMSA U12T1 DIV 01  
