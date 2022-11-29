@@ -160,6 +160,7 @@ def altern(currentNode, listValidGameSlots, listValidPracSlots):
     return listOfSchedules
 
 
+
 #Used to debug Altern
 def printAlternGeneration(listSchedules):
     counter = 0
@@ -230,6 +231,201 @@ def ftrans(checkNode):
     else:
         # Expand node 
         return 3
+
+def check_hc1(someSchedule):
+    pass
+
+#Checks to make sure there are no practices for CSMA U12T1S and CSMA U13T1S between 6 and 7 on
+#Tuesdays and Thursdays
+#Should be true for partial schedules. 
+
+def check_hc2(someSchedule):
+    sched = someSchedule.getSchedule()
+    prac_at_six = sched[day["TU"]][20].getPractices()
+    for prac in prac_at_six:
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+            return False
+    
+    prac_at_six_thirty = sched[day["TU"]][20].getPractices()
+    for prac in prac_at_six_thirty:
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+            return False
+
+    prac_at_six = sched[day["TH"]][20].getPractices()
+    for prac in prac_at_six:
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+            return False
+
+    prac_at_six_thirty = sched[day["TH"]][20].getPractices()
+    for prac in prac_at_six_thirty:
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+            return False
+
+    return True
+
+    
+
+#Checks to see if there are ever more games assigned then game max. 
+#Should always be satisfied, even in partial schedules. 
+
+def check_hc3(someSchedule):
+   for day in someSchedule.getSchedule():
+        for timeslot in day:
+            if(len(timeslot.getGames() > timeslot.getGameMax()):
+                return False
+    return True
+
+
+#Checks to see if there are ever more practices than practice max. 
+#Should always be satisifed, even in partial schedules. 
+
+
+
+def check_hc4(someSchedule):
+    for day in someSchedule.getSchedule():
+        for timeslot in day:
+            if(len(timeslot.getPractices()) > timeslot.getPracMax()):
+                return False
+    return True
+
+
+def check_hc5(someSchedule):
+    pass
+
+
+def check_hc6(someSchedule):
+    pass
+
+
+def check_hc7(someSchedule):
+    pass
+
+
+def check_hc8(someSchedule):
+    pass
+
+
+def check_hc9(someSchedule):
+    pass
+
+##Checks to make sure games in DIV 9 are not scheduled before 18:00
+##should pass on all partial schedules. 
+
+def check_hc10(someSchedule):
+    for day in someSchedule.getSchedule():
+        for time in range(times["18:00"]):
+            for games in day[time].getGames():
+                if(games.split()[3] == "09"):
+                    return False
+            for prac in day[time].getPRactices():
+                if(prac.split()[3] == "09"):
+                    return False
+    return True
+    
+
+#Checks to see if anything has been placed in an unwanted timeslot. 
+# Should pass for partial schedules.     
+
+def check_hc11(someSchedule, unwanted):
+    for unwant_sched in unwanted:
+        unwanted_list = unwant_sched.split(",");
+        g = unwanted_list[0]
+        day = unwanted_list[1]
+        time = unwanted_list[2]
+        for game in someSchedule.getSchedule[days[day]][times[time]]:
+            if(game == g):
+                return False
+    
+    return True
+        
+
+
+#Makes sure that games aren't hosted between 11:00 and 12:30 on Tuesdays and Thrusdays. 
+#Should pass on all partial schedules. 
+
+def check_hc12(someSchedule):
+    sched = someSchedule.getSchedule();
+    if(len(sched[days["TU"]][6].getGames) != 0):
+        return False
+    if(len(sched[days["TU"]][7].getGames) != 0):
+        return False
+    if(len(sched[days["TU"]][8].getGames) != 0):
+        return False
+    if(len(sched[days["TH"]][6].getGames) != 0):
+        return False
+    if(len(sched[days["TH"]][7].getGames) != 0):
+        return False
+    if(len(sched[days["TH"]][8].getGames) != 0):
+        return False
+
+    return True
+    
+
+#Checks to see if any games in the leagues U15, U16, U17 and U19 are in the same timeslot. 
+#Should pass on all partial schedules. 
+#DOUBLE CHECK TO MAKE SURE THIS MATCHES HARD CONSTRAINTS IN ASSIGN SPECS. 
+def check_hc13(someSchedule):
+    for day in someSchedule.getSchedule():
+        for timeslot in day:
+            one_game_found = False;
+            for game in timeslot.getGames():
+                game_list = game.split()
+                tier_div = game[1]
+                if(tier_div[0:3] == "U15" or tier_div[0:3] == "U16" or tier_div[0:3] == "U17" or tier_div[0:3] == "U19"):
+                    if(not one_game_found): 
+                        one_game_found = True
+                    else:
+                        return False
+    
+    return True
+                    
+
+#Checks to make sure that no games in the tear div U12T1S is in the same gameslot. 
+#Should pass all partial schedules. 
+
+def check_hc14(someSchedule):
+    for day in someSchedule.getSchedule():
+        for timeslot in day:
+            u12T1S = False
+            for game in timeslot.getGames():
+                tier_div = game[1];
+                if(tier_div == "U12T1S"):
+                    if(not u12T1S): 
+                        u12T1S = True
+                    else: 
+                        return False
+            for prac in timeslot.getPractices():
+                tier_div = prac[1]
+                if(tier_div == "U12T1S"):
+                    if(not u12T1S): 
+                        u12T1S = True
+                    else: 
+                        return False
+
+    return True
+                
+#Checks to make sure that no games in the tear div U13T1S is in the same gameslot. 
+#Should pass all partial schedules. 
+
+
+def check_hc15(someSchedule):
+    for day in someSchedule.getSchedule():
+        for timeslot in day:
+            u13T1S = False
+            for game in timeslot.getGames():
+                tier_div = game[1];
+                if(tier_div == "U13T1S"):
+                    if(not u13T1S): 
+                        u13T1S = True
+                    else: 
+                        return False
+                if(tier_div == "U13T1S"):
+                    if(not u13T1S): 
+                        u13T1S = True
+                    else: 
+                        return False
+    return True
+                
 
 
 # THIS IS A SUPER BASIC IMPLEMENTATION OF CONSTR() TO TEST REPAIR TREE - THIS STILL NEEDS TO BE PROPERLY IMPLEMENTED BASED ON pg. 2 OF REPORT 
