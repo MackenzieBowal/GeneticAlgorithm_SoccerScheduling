@@ -25,7 +25,35 @@ define fselect
 # sort all the individuals in order of their eval-score
 def sortState():
     global state
-    state = sorted(state, key=lambda st : st[1], reverse=True)
+    state = sorted(state, key=lambda s : s[1], reverse=True)
+
+# rouletteSelect()
+# takes a list of individuals and returns the one selected by a roulette function
+def rouletteSelect(stateList):
+    totalEval = 0
+    for i in range(len(stateList)):
+        totalEval += stateList[i][1]
+    
+    fitnesses = []
+    totalFitness = 0
+
+    for j in range(len(stateList)):
+        fitnesses.append(totalEval - stateList[j][1])
+        totalFitness += fitnesses[j]
+        print("individual "+stateList[j][0]+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
+
+    print(totalFitness)
+
+    num = random.randint(0, totalFitness)
+    index = 0
+
+    while num > 0:
+        print("num: "+str(num)+" index: "+str(index))
+        num -= fitnesses[index]
+        index += 1
+    index -= 1
+
+    return stateList[index]
 
 # fWert()
 # returns an integer 0 for random generation, 1 for mutation/crossover, 2 for deletion
@@ -41,8 +69,11 @@ def fWert():
 # fSelect()
 # performs random generation, mutation/crossover, or deletion
 def fSelect(fWertScore):
+    global state
+
     # random generation
     if fWertScore == 0:
+
         return
 
     # mutation/crossover
@@ -51,16 +82,23 @@ def fSelect(fWertScore):
         if (random.randint(0,100) < 40):
             # mutation
             sortState()
+            indA = rouletteSelect(state)
             return
         else:
             # crossover
             sortState()
-            return
+            indA = rouletteSelect(state)
+            sortState()
+            indB = rouletteSelect(state.remove(indA))
 
 
-    # deletion
+        return
+
+
+    # delete bottom 5 
     elif fWertScore == 2:
         sortState()
+        state = state[5:]
         return
 
 
@@ -71,7 +109,18 @@ def runGeneticAlgorithm():
     state.append(('too', 2))
     state.append(('ate', 8))
     state.append(('nine', 9))
+    state.append(('six', 6))
+    state.append(('won', 1))
+    state.append(('fore', 4))
+    state.append(('two', 2))
+    state.append(('three', 3))
 
+    sortState()
+
+    for i in range(len(state)):
+        print(state[i][0] + str(state[i][1]))
+
+    fSelect(1)
     
     for i in range(len(state)):
         print(state[i][0] + str(state[i][1]))
