@@ -268,6 +268,7 @@ if (repairedSchedule == None):
 else:
    print("this is the repaired schedule after taking the invalid one")
    repairedSchedule.print()
+   repairedSchedule.printSchedule()
 """
 END EXAMPLE
 """

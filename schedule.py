@@ -244,3 +244,33 @@ class Schedule:
         else: #day == days['FR']
             for i in range(0,4): #set two hours for practice on F
                 self.schedule[days['FR']][time+i].setPracticemin(m)
+    
+    def printSchedule(self):
+        print("     Mon" + " " * 22, end = "")
+        print("Tues" + " " * 21, end = "")
+        print("Wed" + " "* 22, end = "")
+        print(f"Thur" + " "* 21, end = "")
+        print("Fri:" + " " * 22)
+        for i in range(numTimeslots):
+            hours = 8 + i // 2
+            minutes = (i % 2) * 3
+            print(str(hours) + ":" + str(minutes) + "0", end = " ")
+            max_games = max(len(self.schedule[days["MO"]][i].getGames()) + len(self.schedule[days["MO"]][i].getPractices()), \
+                len(self.schedule[days["TU"]][i].getGames()) + len(self.schedule[days["TU"]][i].getPractices()), \
+                len(self.schedule[days["WE"]][i].getGames()) + len(self.schedule[days["WE"]][i].getPractices()), \
+                len(self.schedule[days["TH"]][i].getGames()) + len(self.schedule[days["TH"]][i].getPractices()),\
+                len(self.schedule[days["FR"]][i].getGames()) + len(self.schedule[days["FR"]][i].getPractices()))
+            for k in range(max_games):
+                for j in range(numDays):
+                    if(k < len(self.schedule[j][i].getGames())):
+                        print(f"{self.schedule[j][i].getGames()[k]:25}", end = " ")
+                    elif(k < len(self.schedule[j][i].getGames()) + len(self.schedule[j][i].getPractices())):
+                        print(f"{self.schedule[j][i].getPractices()[k - len(self.schedule[j][i].getGames())]:25}", end = " ")
+                    else:
+                        print(" "* 25, end = "")
+                if(k < max_games - 1):
+                    print("\n     ", end = "")
+                else:
+                    print("")
+            print("")
+            
