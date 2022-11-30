@@ -33,7 +33,7 @@ def parse(file):
     
     sched = schedule.Schedule()
     
-    category = "";
+    category = ""
     for line in fileContent:
         if not (line == ''):
             if(line == "Game slots:"):
