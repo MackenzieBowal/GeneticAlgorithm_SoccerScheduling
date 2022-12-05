@@ -12,7 +12,7 @@ from queue import PriorityQueue
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
 #Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
 #Purpose: takes in a reference schedule and repairs it to make it valid. This function can also be used to generate valid schedules to fill the population at the beginning.
-def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac):
+def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac, constrBundle):
     #Create root node 
     rootNode = node.RepairNode()
     rootNode.setSchedule(templateSchedule)
@@ -79,7 +79,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             print("Reached ftrans")
             #Get Node from fleaf and Pass to ftrans
-            output = ftrans(checkNode)
+            output = ftrans(checkNode, constrBundle)
 
             #Used for debugging
             print("the ftrans output is ", output)
@@ -210,14 +210,14 @@ def follows(inspirationSchedule, currentNode, currentGameorPrac):
 #Inputs: Proposed node for expansion passed from fleaf 
 #Outputs: Integer - (1) complete, valid solution found (2) some hard constraints violated (3) incomplete schedule that is valid so far
 #Purpose: Supports expansion method in OR Tree 
-def ftrans(checkNode):
+def ftrans(checkNode, constrBundle):
     passesHardConstraints = False
     if (len(checkNode.getGamesLeft()) > 0):
-        passesHardConstraints = constr(checkNode.getSchedule(), True, False, False)
+        passesHardConstraints = constr(checkNode.getSchedule(), True, False, False, constrBundle)
     elif ((len(checkNode.getGamesLeft()) == 0) and (len(checkNode.getPracLeft()) > 0)):
-        passesHardConstraints = constr(checkNode.getSchedule(), True, True, False)
+        passesHardConstraints = constr(checkNode.getSchedule(), True, True, False, constrBundle)
     else:
-        passesHardConstraints = constr(checkNode.getSchedule(), False, True, True)
+        passesHardConstraints = constr(checkNode.getSchedule(), False, True, True, constrBundle)
 
     # We don't need to explicitly change the sol-entry because if it is no, the node is discarded because it was already pulled from fringe 
     # If the sol-entry should be yes, we return this schedule in repairSchedule() anyways 
@@ -235,11 +235,10 @@ def ftrans(checkNode):
 def check_hc1(someSchedule, partAssign):
     sched = someSchedule.getSchedule()
     for assign in partAssign:
-        assign_list = assign.split(",")
-        league_tier_div = assign_list[0].strip()
-        day = assign_list[1].strip()
-        time = assign_list[2].strip()
-        games_list = sched[days[day]][times[time]]
+        league_tier_div = assign[0]
+        day = assign[1]
+        time = assign[2]
+        games_list = sched[days[day]][times[time]].getGames()
         if(league_tier_div not in games_list):
             return False
     
@@ -402,11 +401,10 @@ def check_hc10(someSchedule):
 
 def check_hc11(someSchedule, unwanted):
     for unwant_sched in unwanted:
-        unwanted_list = unwant_sched.split(",")
-        g = unwanted_list[0]
-        day = unwanted_list[1]
-        time = unwanted_list[2]
-        for game in someSchedule.getSchedule[days[day]][times[time]]:
+        g = unwant_sched[0]
+        day = unwant_sched[1]
+        time = unwant_sched[2]
+        for game in someSchedule.getSchedule()[days[day]][times[time]].getGames():
             if(game == g):
                 return False
     
@@ -503,83 +501,77 @@ def check_hc15(someSchedule):
 
 
 # THIS IS A SUPER BASIC IMPLEMENTATION OF CONSTR() TO TEST REPAIR TREE - THIS STILL NEEDS TO BE PROPERLY IMPLEMENTED BASED ON pg. 2 OF REPORT 
-def constr(someSchedule, partialFlag, gamesDoneFlag, pracDoneFlag):
+def constr(someSchedule, partialFlag, gamesDoneFlag, pracDoneFlag, constrBundle):
     if(not partialFlag):
-       #hc1 = check_hc1(someSchedule, partAssign)
+       hc1 = check_hc1(someSchedule, constrBundle.partAssign)
        hc2 = check_hc2(someSchedule)
        hc3 = check_hc3(someSchedule)
        hc4 = check_hc4(someSchedule)
        hc5 = check_hc5(someSchedule)
-       #hc6 = check_hc6(someSchedule)
+       hc6 = check_hc6(someSchedule, constrBundle.notCompatible)
        hc7 = check_hc7(someSchedule)
        hc8 = check_hc8(someSchedule)
        hc9 = check_hc9(someSchedule)
        hc10 = check_hc10(someSchedule)
-       #hc11 = check_hc11(someSchedule)
+       hc11 = check_hc11(someSchedule, constrBundle.unwanted)
        hc12 = check_hc12(someSchedule)
        hc13 = check_hc13(someSchedule)
        hc14 = check_hc14(someSchedule)
        hc15 = check_hc15(someSchedule)
 
-       return hc2 and hc3 and hc4 and hc5 and hc7 and hc8 \
-           and hc9 and hc10  and hc12 and hc13 and hc14 and hc15
+       return hc1 and hc2 and hc3 and hc4 and hc5 and hc6 and hc7 and hc8 \
+           and hc9 and hc10 and hc11 and hc12 and hc13 and hc14 and hc15
     
     else:
         if(gamesDoneFlag):
-            #hc1 = check_hc1(someSchedule, partAssign)
+            hc1 = check_hc1(someSchedule, constrBundle.partAssign)
             hc2 = check_hc2(someSchedule)
             hc3 = check_hc3(someSchedule)
             hc4 = check_hc4(someSchedule)
             hc5 = check_hc5(someSchedule)
-            #hc6 = check_hc6(someSchedule)
+            hc6 = check_hc6(someSchedule, constrBundle.notCompatible)
             hc7 = check_hc7(someSchedule)
-            #hc8 = check_hc8(someSchedule)
-            #hc9 = check_hc9(someSchedule)
             hc10 = check_hc10(someSchedule)
-            #hc11 = check_hc11(someSchedule)
+            hc11 = check_hc11(someSchedule, constrBundle.unwanted)
             hc12 = check_hc12(someSchedule)
             hc13 = check_hc13(someSchedule)
             hc14 = check_hc14(someSchedule)
             hc15 = check_hc15(someSchedule)
 
-            return hc2 and hc3 and hc4 and hc5  and hc7 and \
-            hc10 and  hc12 and hc13 and hc15
+            return hc1 and hc2 and hc3 and hc4 and hc5  and hc6 and hc7 and \
+            hc10 and hc11 and hc12 and hc13 and hc15
         
         elif(pracDoneFlag):
-            #hc1 = check_hc1(someSchedule, partAssign)
+            hc1 = check_hc1(someSchedule, constrBundle.partAssign)
             hc2 = check_hc2(someSchedule)
             hc3 = check_hc3(someSchedule)
             hc4 = check_hc4(someSchedule)
             hc5 = check_hc5(someSchedule)
-            #hc6 = check_hc6(someSchedule)
-            #hc7 = check_hc7(someSchedule)
+            hc6 = check_hc6(someSchedule, constrBundle.notCompatible)
             hc8 = check_hc8(someSchedule)
-            #hc9 = check_hc9(someSchedule)
             hc10 = check_hc10(someSchedule)
-            #hc11 = check_hc11(someSchedule)
+            hc11 = check_hc11(someSchedule, constrBundle.unwanted)
             hc12 = check_hc12(someSchedule)
             hc13 = check_hc13(someSchedule)
             hc14 = check_hc14(someSchedule)
             hc15 = check_hc15(someSchedule)
 
-            return  hc2 and hc3 and hc4 and hc5 and hc8 and \
-            hc10 and hc12 and hc13 and hc14 and hc15
+            return  hc1 and hc2 and hc3 and hc4 and hc5 and hc8 and \
+            hc10 and hc11 and hc12 and hc13 and hc14 and hc15
         else:
-            #hc1 = check_hc1(someSchedule, partAssign)
+            hc1 = check_hc1(someSchedule, constrBundle.partAssign)
             hc2 = check_hc2(someSchedule)
             hc3 = check_hc3(someSchedule)
             hc4 = check_hc4(someSchedule)
             hc5 = check_hc5(someSchedule)
-            #hc6 = check_hc6(someSchedule)
-            #hc7 = check_hc7(someSchedule)
-            #hc8 = check_hc8(someSchedule)
-            #hc9 = check_hc9(someSchedule)
+            hc6 = check_hc6(someSchedule, constrBundle.notCompatible)
+            hc7 = check_hc7(someSchedule)
             hc10 = check_hc10(someSchedule)
-            #hc11 = check_hc11(someSchedule)
+            hc11 = check_hc11(someSchedule, constrBundle.unwanted)
             hc12 = check_hc12(someSchedule)
             hc13 = check_hc13(someSchedule)
             hc14 = check_hc14(someSchedule)
             hc15 = check_hc15(someSchedule)
 
-            return  hc2 and hc3 and hc4 and hc5 and  \
-            hc10  and hc12 and hc13 and hc14 and hc15
+            return hc1 and hc2 and hc3 and hc4 and hc5 and hc6 and \
+            hc10 and hc11 and hc12 and hc13 and hc14 and hc15

@@ -11,6 +11,18 @@ from constants import *
 #python main.py test.txt 1 0 1 0 10 10 10 10
 #python main.py test2.txt 1 0 1 0 10 10 10 10
 
+
+class ConstrBundle:
+
+    def __init__(self, notCompatible, unwanted, preferences, pair, partAssign):
+        self.notCompatible = notCompatible
+        self.unwanted = unwanted
+        self.preferences = preferences
+        self.pair = pair
+        self.partAssign = partAssign
+
+
+
 """
 parse()
 Input: One text file
@@ -249,7 +261,9 @@ END EXAMPLE
 """
 #EXAMPLE 2: CREATING A RANDOM, VALID SCHEDULE
 """
-repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
+
+constrBundle = ConstrBundle(notCompatible, unwanted, preferences, pair, partassign)
+repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
 if (repairedSchedule == None):
     print("Exception 1- no valid schedule found")
 else:
@@ -262,7 +276,7 @@ END EXAMPLE
 """
 #EXAMPLE 3: REPAIRING A SCHEDULE
 """
-repairedSchedule = repairSchedule(sched, s1, True, validGameSlots, validPracSlots, gamesList, pracList)
+repairedSchedule = repairSchedule(sched, s1, True, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
 if (repairedSchedule == None):
    print("Exception 2- no valid schedule found")
 else:
