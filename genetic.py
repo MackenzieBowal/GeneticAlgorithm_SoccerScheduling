@@ -1,13 +1,13 @@
 #genetic.py
 
-'''
+
 import sys
 import copy
 import schedule
 import node
 from repairORTree import *
 from constants import *
-'''
+import evalFunction
 import random
 
 # state contains two objects for each individual: the schedule and its eval-score
@@ -73,8 +73,16 @@ def fSelect(fWertScore):
 
     # random generation
     if fWertScore == 0:
+        #randSchedule = schedule.newSchedule()
+        #print(randSchedule)
+        randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
+        if (randSchedule == None):
+            print("Exception 1- no valid schedule found")
+        else:
+            print("This is a random, valid schedule:")
+            randSchedule.print()
+            state.append(tuple(randSchedule, evalFunction.eval(randSchedule)))
 
-        return
 
     # mutation/crossover
     elif fWertScore == 1:
@@ -83,7 +91,6 @@ def fSelect(fWertScore):
             # mutation
             sortState()
             indA = rouletteSelect(state)
-            return
         else:
             # crossover
             sortState()
@@ -92,19 +99,29 @@ def fSelect(fWertScore):
             indB = rouletteSelect(state.remove(indA))
 
 
-        return
 
 
     # delete bottom 5 
     elif fWertScore == 2:
         sortState()
         state = state[5:]
-        return
 
 
-def runGeneticAlgorithm():
+def runGeneticAlgorithm(s, vG, vP, g, p):
+
+    global sched
+    global validGameSlots 
+    global validPracSlots 
+    global gamesList
+    global pracList
+    sched = s
+    validGameSlots = vG
+    validPracSlots = vP
+    gamesList = g
+    pracList = p
 
     # start with an empty state, declared at the top of the file
+    '''
     state.append(('five', 5))
     state.append(('too', 2))
     state.append(('ate', 8))
@@ -114,15 +131,15 @@ def runGeneticAlgorithm():
     state.append(('fore', 4))
     state.append(('two', 2))
     state.append(('three', 3))
+    '''
 
     sortState()
-
+    '''
     for i in range(len(state)):
         print(state[i][0] + str(state[i][1]))
-
-    fSelect(1)
-    
+    '''
+    fSelect(0)
+    '''
     for i in range(len(state)):
         print(state[i][0] + str(state[i][1]))
-    
-runGeneticAlgorithm()
+    '''
