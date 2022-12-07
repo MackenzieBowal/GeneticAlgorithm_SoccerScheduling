@@ -76,7 +76,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             if (fringe.empty()==True):
                 #sys.exit("A valid schedule can not be produced.")
                 return None
-                
+
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
 
@@ -256,22 +256,22 @@ def check_hc2(someSchedule):
     sched = someSchedule.getSchedule()
     prac_at_six = sched[days["TU"]][20].getPractices()
     for prac in prac_at_six:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
             return False
     
     prac_at_six_thirty = sched[days["TU"]][20].getPractices()
     for prac in prac_at_six_thirty:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
             return False
 
     prac_at_six = sched[days["TH"]][20].getPractices()
     for prac in prac_at_six:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
             return False
 
     prac_at_six_thirty = sched[days["TH"]][20].getPractices()
     for prac in prac_at_six_thirty:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == U12T1S or prac.split()[1] == U13T1S)):
+        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
             return False
 
     return True

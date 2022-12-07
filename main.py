@@ -138,7 +138,7 @@ def parse(file):
                 game = components[0].strip()
                 day = components[1].strip()
                 time = components[2].strip()
-                if "PRC" in game:
+                if ("PRC" in game) or ("OPN" in game):
                     sched.addPractice(days[day], times[time], game)
                     pracList.remove(game)
                 else:
