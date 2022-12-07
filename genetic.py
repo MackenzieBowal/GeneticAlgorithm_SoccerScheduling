@@ -125,17 +125,68 @@ def fSelect(fWertScore):
     elif fWertScore == 1:
         # 40% chance of mutation, 60% chance of crossover
         #if (random.randint(0,100) < 40):
-        if (0 == 1):
+        if (1 == 1):
             # mutation
             sortState()
             indA = rouletteSelect(state)
             mutant = sched.newSchedule()
 
-            # move 1 of the games around
-            
+            uGames = copy.copy(unassignedGames)
+            uPracs = copy.copy(unassignedPracs)
 
-            # move 1 of the practices around
+            numGames = len(uGames)//10 + 1
+            numPracs = len(uPracs)//10 + 1
+
+            # randomize 10% of the games
+            for i in range(numGames):
+                # choose a random game to assign
+                randIndex = random.randint(0, len(uGames)-1)
+                game = uGames[randIndex]
+                uGames.remove(game)
+                print("randomizing game "+game)
+                worked = False
+                # Try adding the game -> if it can't be added to the random slot, try again
+                while worked == False:
+                    slot = random.randint(0, len(validGameSlots)-1)
+                    day, time = validGameSlots[slot]
+                    worked = mutant.addGame(day, time, game)
+
+            # randomize 10% of the practices
+            for i in range(numPracs):
+                # choose a random practice to assign
+                randIndex = random.randint(0, len(uPracs)-1)
+                prac = uPracs[randIndex]
+                uPracs.remove(prac)
+                print("randomizing prac "+prac)
+                worked = False
+                # Try adding the practice -> if it can't be added to the random slot, try again
+                while worked == False:
+                    slot = random.randint(0, len(validPracSlots)-1)
+                    day, time = validPracSlots[slot]
+                    worked = mutant.addPractice(day, time, prac)
+
+            # for the rest of the games, follow parent
+            for game in uGames:
+                # follow parent schedule
+                print("following parent for game "+game)
+                day, time = findTimeslot(indA[0], game)
+                if (day != -1 and time != -1):
+                    mutant.addGame(day, time, game)
+                else:
+                    sys.exit("Parent had no game assigned")
+
+            # for the rest of the practices, follow parent
+            for prac in uPracs:
+                # follow parent schedule
+                print("following parent for prac "+prac)
+                day, time = findTimeslot(indA[0], prac)
+                if (day != -1 and time != -1):
+                    mutant.addPractice(day, time, prac)
+                else:
+                    sys.exit("Parent had no prac assigned")
             
+            print("\nMUTANT SCHEDULE:")
+            mutant.printSchedule()
 
         else:
             # crossover
@@ -257,7 +308,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, cb, pa):
     state.append(('two', 2))
     state.append(('three', 3))
     '''
-
+    random.seed()
     sortState()
 
     for i in range(5):

@@ -124,7 +124,7 @@ class Schedule:
     def addGame(self, day, time, g):
         add = True
         if day == days['MO']:
-            for i in range(0,2): #games on M,W,F are an hour long
+            for i in range(0,2): # games on M,W,F are an hour long
                 if (not self.schedule[days['MO']][time+i].hasRoomForGame() or
                     not self.schedule[days['WE']][time+i].hasRoomForGame() or
                     not self.schedule[days['FR']][time+i].hasRoomForGame()):

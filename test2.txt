@@ -33,7 +33,4 @@ MO, 9:00, CMSA U8T1 DIV 01, 200
  
 Pair: 
 CMSA U8T1 DIV 01, CMSA U12T1 DIV 01 PRC 01 
-
-Partial assignments:
-CMSA U12T1 DIV 02, TU, 17:00
  
