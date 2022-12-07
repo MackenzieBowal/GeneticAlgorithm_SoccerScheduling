@@ -65,7 +65,7 @@ def fWert():
 
     elif len(state) < 50:
         return 1
-        
+
     else:
         return 2
 
@@ -188,4 +188,3 @@ def runGeneticAlgorithm(s, vG, vP, g, p, cb):
     for i in range(len(state)):
         print("eval state "+str(i) + " " + str(state[i][1]))
 
-    
