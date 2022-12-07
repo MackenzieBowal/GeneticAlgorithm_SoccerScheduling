@@ -6,7 +6,7 @@ import copy
 import schedule
 import node
 from repairORTree import *
-from constants import *
+import constants
 import evalFunction
 import random
 
@@ -38,15 +38,15 @@ def rouletteSelect(stateList):
     totalFitness = 0
 
     for j in range(len(stateList)):
-        fitnesses.append(totalEval - stateList[j][1])
+        fitnesses.append((totalEval - stateList[j][1])*1000)
         totalFitness += fitnesses[j]
-        #print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
+        print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
 
     num = random.randint(0, totalFitness)
     index = 0
 
     while num > 0:
-        #print("num: "+str(num)+" index: "+str(index))
+        print("num: "+str(num)+" index: "+str(index))
         num -= fitnesses[index]
         index += 1
     index -= 1
@@ -125,20 +125,68 @@ def fSelect(fWertScore):
     elif fWertScore == 1:
         # 40% chance of mutation, 60% chance of crossover
         #if (random.randint(0,100) < 40):
-        if (0 == 1):
+        if (1 == 1):
             # mutation
             sortState()
             indA = rouletteSelect(state)
             mutant = sched.newSchedule()
 
-            # move 10% of the games around
-            for game in gamesList:
-                continue
+            uGames = copy.copy(unassignedGames)
+            uPracs = copy.copy(unassignedPracs)
 
+            numGames = len(uGames)//10 + 1
+            numPracs = len(uPracs)//10 + 1
 
-            # move 10% of the practices around
-            for practice in pracList:
-                continue
+            # randomize 10% of the games
+            for i in range(numGames):
+                # choose a random game to assign
+                randIndex = random.randint(0, len(uGames)-1)
+                game = uGames[randIndex]
+                uGames.remove(game)
+                print("randomizing game "+game)
+                worked = False
+                # Try adding the game -> if it can't be added to the random slot, try again
+                while worked == False:
+                    slot = random.randint(0, len(validGameSlots)-1)
+                    day, time = validGameSlots[slot]
+                    worked = mutant.addGame(day, time, game)
+
+            # randomize 10% of the practices
+            for i in range(numPracs):
+                # choose a random practice to assign
+                randIndex = random.randint(0, len(uPracs)-1)
+                prac = uPracs[randIndex]
+                uPracs.remove(prac)
+                print("randomizing prac "+prac)
+                worked = False
+                # Try adding the practice -> if it can't be added to the random slot, try again
+                while worked == False:
+                    slot = random.randint(0, len(validPracSlots)-1)
+                    day, time = validPracSlots[slot]
+                    worked = mutant.addPractice(day, time, prac)
+
+            # for the rest of the games, follow parent
+            for game in uGames:
+                # follow parent schedule
+                print("following parent for game "+game)
+                day, time = findTimeslot(indA[0], game)
+                if (day != -1 and time != -1):
+                    mutant.addGame(day, time, game)
+                else:
+                    sys.exit("Parent had no game assigned")
+
+            # for the rest of the practices, follow parent
+            for prac in uPracs:
+                # follow parent schedule
+                print("following parent for prac "+prac)
+                day, time = findTimeslot(indA[0], prac)
+                if (day != -1 and time != -1):
+                    mutant.addPractice(day, time, prac)
+                else:
+                    sys.exit("Parent had no prac assigned")
+            
+            print("\nMUTANT SCHEDULE:")
+            mutant.printSchedule()
 
         else:
             # crossover
@@ -158,7 +206,9 @@ def fSelect(fWertScore):
                 print("assigning game "+game)
                 # even games are indA
                 if i % 2 == 0:
+                    print("even game")
                     day, time = findTimeslot(indA[0], game)
+                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
                         child.addGame(day, time, game)
                     else:
@@ -168,8 +218,9 @@ def fSelect(fWertScore):
                             return
                 # odd games are indB
                 elif i % 2 == 1:
+                    print("odd game")
                     day, time = findTimeslot(indB[0], game)
-                    child.addGame(day, time, game)
+                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
                         child.addGame(day, time, game)
                     else:
@@ -201,7 +252,8 @@ def fSelect(fWertScore):
                         child.addPractice(day, time, prac)
                         if (day != -1 and time != -1):
                             return
-
+            print("\nCHILD SCHEDULE: ")
+            child.printSchedule()
 
 
     # delete bottom 5 
@@ -234,12 +286,14 @@ def runGeneticAlgorithm(s, vG, vP, g, p, cb, pa):
     global unassignedPracs
     unassignedGames = copy.copy(gamesList)
     unassignedPracs = copy.copy(pracList)
+    '''
     for gp in partAssign:
-        if ("PRC" in gp or "OPN" in gp):
-            unassignedPracs.remove(gp)
+        if ("PRC" in gp[0] or "OPN" in gp[0]):
+            unassignedPracs.remove(gp[0])
         else:
-            unassignedGames.remove(gp)
-
+            print(unassignedGames)
+            unassignedGames.remove(gp[0])
+    '''
 
     # start with an empty state, declared at the top of the file
 
@@ -254,7 +308,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, cb, pa):
     state.append(('two', 2))
     state.append(('three', 3))
     '''
-
+    random.seed()
     sortState()
 
     for i in range(5):

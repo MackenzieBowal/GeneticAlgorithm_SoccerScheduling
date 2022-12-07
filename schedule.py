@@ -122,16 +122,9 @@ class Schedule:
         return self.schedule
 
     def addGame(self, day, time, g):
-        print("in addGame, day = "+str(day)+" time = "+str(time)+" game = "+g)
         add = True
         if day == days['MO']:
-            print("in MO")
-            for i in range(0,2): #games on M,W,F are an hour long
-                print("checking add")
-                print(str(self.schedule[days['MO']][time+i].hasRoomForGame()))
-                print(str(self.schedule[days['WE']][time+i].hasRoomForGame()))
-                print(str(self.schedule[days['FR']][time+i].hasRoomForGame()))
-
+            for i in range(0,2): # games on M,W,F are an hour long
                 if (not self.schedule[days['MO']][time+i].hasRoomForGame() or
                     not self.schedule[days['WE']][time+i].hasRoomForGame() or
                     not self.schedule[days['FR']][time+i].hasRoomForGame()):
@@ -139,7 +132,6 @@ class Schedule:
                     break
             if add:
                 for i in range(0,2):
-                    print("adding")
                     self.schedule[days['MO']][time+i].addGame(g)
                     self.schedule[days['WE']][time+i].addGame(g)
                     self.schedule[days['FR']][time+i].addGame(g)
