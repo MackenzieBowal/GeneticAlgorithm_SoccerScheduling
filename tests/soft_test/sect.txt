@@ -1,0 +1,24 @@
+Name:
+SectionPenTest
+
+Game slots:
+MO, 8:00, 3, 2
+MO, 9:00, 3,2
+
+Practice slots:
+
+Games:
+CSMA U12T1 DIV 01
+CSMA U12T1 DIV 02
+
+Practices:
+
+Not compatible:
+
+Unwanted:
+
+Preferences:
+
+Pair:
+
+Partial assignments:
