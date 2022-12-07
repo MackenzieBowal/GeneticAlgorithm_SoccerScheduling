@@ -40,7 +40,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         #Discuss edge case of there being no schedule to return with team, for now I am returning Python's version of Null
         #What behaviour should be exhibited for inputs that cannot create a valid schedule?
         if (listPossibleExpansions == []):
-            sys.exit("A valid schedule can not be produced.")
+            #sys.exit("A valid schedule can not be produced.")
+            return None
 
         #Define fleaf - no separate function, it's just defined inside repairSchedule()
         print("Reached fleaf")
@@ -73,8 +74,9 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             #if all fringe schedules have been checked, then there is no valid schedule that can be produced
             if (fringe.empty()==True):
-                sys.exit("A valid schedule can not be produced.")
-            
+                #sys.exit("A valid schedule can not be produced.")
+                return None
+                
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
 
