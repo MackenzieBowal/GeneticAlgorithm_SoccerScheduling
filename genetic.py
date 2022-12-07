@@ -6,7 +6,7 @@ import copy
 import schedule
 import node
 from repairORTree import *
-from constants import *
+import constants
 import evalFunction
 import random
 
@@ -38,15 +38,15 @@ def rouletteSelect(stateList):
     totalFitness = 0
 
     for j in range(len(stateList)):
-        fitnesses.append(totalEval - stateList[j][1])
+        fitnesses.append((totalEval - stateList[j][1])*1000)
         totalFitness += fitnesses[j]
-        #print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
+        print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
 
     num = random.randint(0, totalFitness)
     index = 0
 
     while num > 0:
-        #print("num: "+str(num)+" index: "+str(index))
+        print("num: "+str(num)+" index: "+str(index))
         num -= fitnesses[index]
         index += 1
     index -= 1
@@ -131,14 +131,11 @@ def fSelect(fWertScore):
             indA = rouletteSelect(state)
             mutant = sched.newSchedule()
 
-            # move 10% of the games around
-            for game in gamesList:
-                continue
+            # move 1 of the games around
+            
 
-
-            # move 10% of the practices around
-            for practice in pracList:
-                continue
+            # move 1 of the practices around
+            
 
         else:
             # crossover
@@ -158,7 +155,9 @@ def fSelect(fWertScore):
                 print("assigning game "+game)
                 # even games are indA
                 if i % 2 == 0:
+                    print("even game")
                     day, time = findTimeslot(indA[0], game)
+                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
                         child.addGame(day, time, game)
                     else:
@@ -168,8 +167,9 @@ def fSelect(fWertScore):
                             return
                 # odd games are indB
                 elif i % 2 == 1:
+                    print("odd game")
                     day, time = findTimeslot(indB[0], game)
-                    child.addGame(day, time, game)
+                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
                         child.addGame(day, time, game)
                     else:
@@ -201,7 +201,8 @@ def fSelect(fWertScore):
                         child.addPractice(day, time, prac)
                         if (day != -1 and time != -1):
                             return
-
+            print("\nCHILD SCHEDULE: ")
+            child.printSchedule()
 
 
     # delete bottom 5 
@@ -234,12 +235,14 @@ def runGeneticAlgorithm(s, vG, vP, g, p, cb, pa):
     global unassignedPracs
     unassignedGames = copy.copy(gamesList)
     unassignedPracs = copy.copy(pracList)
+    '''
     for gp in partAssign:
-        if ("PRC" in gp or "OPN" in gp):
-            unassignedPracs.remove(gp)
+        if ("PRC" in gp[0] or "OPN" in gp[0]):
+            unassignedPracs.remove(gp[0])
         else:
-            unassignedGames.remove(gp)
-
+            print(unassignedGames)
+            unassignedGames.remove(gp[0])
+    '''
 
     # start with an empty state, declared at the top of the file
 
