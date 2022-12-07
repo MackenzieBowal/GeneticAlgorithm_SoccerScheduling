@@ -1,0 +1,25 @@
+Name:
+PartTest
+
+Game slots:
+MO, 9:00, 3, 0
+TU, 9:30, 3, 0
+
+Practice slots:
+
+Games:
+CMSA U8T1 DIV 01
+CUSA O18 DIV 01
+
+Practices:
+
+Not compatible:
+
+Unwanted:
+
+Preferences:
+
+Pair:
+
+Partial assignments:
+CUSA O18 DIV 01, TU, 9:30

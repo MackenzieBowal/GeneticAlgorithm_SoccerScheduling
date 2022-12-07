@@ -1,0 +1,23 @@
+Name:
+PartTest
+
+Game slots:
+MO, 9:00, 3, 0
+TU, 19:00, 3, 0
+
+Practice slots:
+
+Games:
+CMSA U8T1 DIV 09
+
+Practices:
+
+Not compatible:
+
+Unwanted:
+
+Preferences:
+
+Pair:
+
+Partial assignments:

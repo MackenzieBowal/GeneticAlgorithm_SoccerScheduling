@@ -1,0 +1,28 @@
+Name:
+basic_gamemin
+
+Game slots:
+MO, 8:00, 1, 0
+MO, 9:00, 1, 1
+MO, 10:00, 1, 0
+MO, 11:00, 1, 1
+MO, 12:00, 1, 0
+
+Practice slots:
+
+Games:
+CMSA U12T1 DIV 01
+CMSA U12T1 DIV 02
+CMSA U12T1 DIV 03
+
+Practices:
+
+Not compatible:
+
+Unwanted:
+
+Preferences:
+
+Pair:
+
+Partial assignments:
