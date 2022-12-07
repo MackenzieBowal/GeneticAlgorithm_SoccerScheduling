@@ -40,7 +40,7 @@ def rouletteSelect(stateList):
     for j in range(len(stateList)):
         fitnesses.append(totalEval - stateList[j][1])
         totalFitness += fitnesses[j]
-        print("individual "+stateList[j][0]+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
+        print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
 
     print(totalFitness)
 
@@ -55,6 +55,15 @@ def rouletteSelect(stateList):
 
     return stateList[index]
 
+# find which timeslot a schedule contains a game or practice
+def findTimeslot(sch, gameprac):
+    for day in days:
+        for time in times:
+            if (gameprac in sch.getSchedule()[day][time].games) or (gameprac in sch.getSchedule()[day][time].practices):
+                return day, time
+                break
+    return -1, -1
+
 # fWert()
 # returns an integer 0 for random generation, 1 for mutation/crossover, 2 for deletion
 def fWert():
@@ -65,7 +74,7 @@ def fWert():
 
     elif len(state) < 50:
         return 1
-        
+
     else:
         return 2
 
@@ -118,17 +127,43 @@ def fSelect(fWertScore):
     # mutation/crossover
     elif fWertScore == 1:
         # 40% chance of mutation, 60% chance of crossover
-        if (random.randint(0,100) < 40):
+        #if (random.randint(0,100) < 40):
+        if (0 == 1):
             # mutation
             sortState()
             indA = rouletteSelect(state)
+            mutant = sched.newSchedule()
+
+            # move 10% of the games around
+            for game in gamesList:
+                continue
+
+
+            # move 10% of the practices around
+            for practice in pracList:
+                continue
 
         else:
             # crossover
             sortState()
             indA = rouletteSelect(state)
+            print("indA: "+str(indA))
             sortState()
-            indB = rouletteSelect(state.remove(indA))
+            temp = copy.copy(state)
+            temp.remove(indA)
+            indB = rouletteSelect(temp)
+            child = sched.newSchedule()
+
+            for i in range(len(gamesList)):
+                game = gamesList[i]
+                # even games are indA
+                if i % 2 == 0:
+                    day, time = findTimeslot(indA[0], game)
+                    child.addGame(day, time, game)
+                # odd games are indB
+                elif i % 2 == 1:
+                    day, time = findTimeslot(indB[0], game)
+                    child.addGame(day, time, game)
 
 
 
@@ -183,9 +218,8 @@ def runGeneticAlgorithm(s, vG, vP, g, p, cb):
     for i in range(len(state)):
         print("eval state"+str(i) + " " + str(state[i][1]))
 
-    fSelect(2)
+    fSelect(1)
 
     for i in range(len(state)):
         print("eval state "+str(i) + " " + str(state[i][1]))
 
-    
