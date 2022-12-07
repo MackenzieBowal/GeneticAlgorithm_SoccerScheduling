@@ -73,15 +73,39 @@ def fSelect(fWertScore):
 
     # random generation
     if fWertScore == 0:
-        #randSchedule = schedule.newSchedule()
-        #print(randSchedule)
+
+        '''
+        newSch = sched.newSchedule()
+        newSch.getSchedule()[0][1].gamemax = 2
+        newSch.getSchedule()[2][1].gamemax = 2
+        newSch.getSchedule()[4][1].gamemax = 2
+        newSch.print()
+
+        newSch.addGame(0, 1, 'CMSA U12T1 DIV 01')
+        newSch.addGame(0, 1, 'CMSA U12T1 DIV 02')
+        newSch.print()
+        e = evalFunction.evalSecDiff(newSch)
+        print("eval done: "+ str(e))
+        '''
         randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
         if (randSchedule == None):
             print("Exception 1- no valid schedule found")
         else:
-            print("This is a random, valid schedule:")
+            # add random schedule to state
             randSchedule.print()
-            state.append(tuple(randSchedule, evalFunction.eval(randSchedule)))
+            state.append((randSchedule, evalFunction.eval(randSchedule)))
+
+            '''
+            randSchedule.getSchedule()[0][2].games.clear()
+            randSchedule.getSchedule()[0][2].practices.clear()
+
+            print("evalMinFilled: "+str(evalFunction.evalMinFilled(randSchedule)))
+            print("evalPref: "+str(evalFunction.evalPref(randSchedule)))
+            print("evalPair: "+str(evalFunction.evalPair(randSchedule)))
+            print("evalSecDiff: "+str(evalFunction.evalSecDiff(randSchedule)))
+
+            print(str(evalFunction.eval(randSchedule)))
+            '''
 
 
     # mutation/crossover
