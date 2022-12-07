@@ -248,4 +248,4 @@ END EXAMPLE
 
 evalFunction.initiateEval(wMinFilled, wPref, wPair, wSecDiff, penGameMin, penPracticeMin, preferences, penNotPaired, penSection, pair)
 
-runGeneticAlgorithm(sched, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
+runGeneticAlgorithm(sched, validGameSlots, validPracSlots, gamesList, pracList, constrBundle, partassign)

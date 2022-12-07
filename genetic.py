@@ -40,15 +40,13 @@ def rouletteSelect(stateList):
     for j in range(len(stateList)):
         fitnesses.append(totalEval - stateList[j][1])
         totalFitness += fitnesses[j]
-        print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
-
-    print(totalFitness)
+        #print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
 
     num = random.randint(0, totalFitness)
     index = 0
 
     while num > 0:
-        print("num: "+str(num)+" index: "+str(index))
+        #print("num: "+str(num)+" index: "+str(index))
         num -= fitnesses[index]
         index += 1
     index -= 1
@@ -57,11 +55,10 @@ def rouletteSelect(stateList):
 
 # find which timeslot a schedule contains a game or practice
 def findTimeslot(sch, gameprac):
-    for day in days:
-        for time in times:
-            if (gameprac in sch.getSchedule()[day][time].games) or (gameprac in sch.getSchedule()[day][time].practices):
-                return day, time
-                break
+    for assign in sch.getAssignment():
+        if assign[0] == gameprac:
+            return assign[1], assign[2]
+            break
     return -1, -1
 
 # fWert()
@@ -152,19 +149,58 @@ def fSelect(fWertScore):
             temp = copy.copy(state)
             temp.remove(indA)
             indB = rouletteSelect(temp)
+            print("indB: "+str(indB))
+
             child = sched.newSchedule()
 
-            for i in range(len(gamesList)):
-                game = gamesList[i]
+            for i in range(len(unassignedGames)):
+                game = unassignedGames[i]
+                print("assigning game "+game)
                 # even games are indA
                 if i % 2 == 0:
                     day, time = findTimeslot(indA[0], game)
-                    child.addGame(day, time, game)
+                    if (day != -1 and time != -1):
+                        child.addGame(day, time, game)
+                    else:
+                        day, time = findTimeslot(indB[0], game)
+                        child.addGame(day, time, game)
+                        if (day != -1 and time != -1):
+                            return
                 # odd games are indB
                 elif i % 2 == 1:
                     day, time = findTimeslot(indB[0], game)
                     child.addGame(day, time, game)
-
+                    if (day != -1 and time != -1):
+                        child.addGame(day, time, game)
+                    else:
+                        day, time = findTimeslot(indA[0], game)
+                        child.addGame(day, time, game)
+                        if (day != -1 and time != -1):
+                            return
+            
+            for i in range(len(unassignedPracs)):
+                prac = unassignedPracs[i]
+                # even pracs are indA
+                if i % 2 == 0:
+                    day, time = findTimeslot(indA[0], prac)
+                    if (day != -1 and time != -1):
+                        child.addPractice(day, time, prac)
+                    else:
+                        day, time = findTimeslot(indB[0], prac)
+                        child.addPractice(day, time, prac)
+                        if (day != -1 and time != -1):
+                            return
+                # odd pracs are indB
+                elif i % 2 == 1:
+                    day, time = findTimeslot(indB[0], prac)
+                    child.addPractice(day, time, prac)
+                    if (day != -1 and time != -1):
+                        child.addPractice(day, time, prac)
+                    else:
+                        day, time = findTimeslot(indA[0], prac)
+                        child.addPractice(day, time, prac)
+                        if (day != -1 and time != -1):
+                            return
 
 
 
@@ -176,7 +212,7 @@ def fSelect(fWertScore):
     return
 
 
-def runGeneticAlgorithm(s, vG, vP, g, p, cb):
+def runGeneticAlgorithm(s, vG, vP, g, p, cb, pa):
 
     global sched
     global validGameSlots 
@@ -184,12 +220,26 @@ def runGeneticAlgorithm(s, vG, vP, g, p, cb):
     global gamesList
     global pracList
     global constrBundle
+    global partAssign
     sched = s
     validGameSlots = vG
     validPracSlots = vP
     gamesList = g
     pracList = p
     constrBundle = cb
+    partAssign = pa
+
+    # create a list of games and practices that are not automatically assigned
+    global unassignedGames
+    global unassignedPracs
+    unassignedGames = copy.copy(gamesList)
+    unassignedPracs = copy.copy(pracList)
+    for gp in partAssign:
+        if ("PRC" in gp or "OPN" in gp):
+            unassignedPracs.remove(gp)
+        else:
+            unassignedGames.remove(gp)
+
 
     # start with an empty state, declared at the top of the file
 
