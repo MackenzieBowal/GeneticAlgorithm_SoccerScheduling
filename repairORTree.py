@@ -28,7 +28,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
         print("Running Altern round: ", counter)
         counter += 1
-        currentNode.getSchedule().print()
+        currentNode.getSchedule().printSchedule()
 
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
         
@@ -167,7 +167,7 @@ def printAlternGeneration(listSchedules):
     for node in listSchedules:
         print("Alternative ", counter)
         counter += 1 
-        node.getSchedule().print()
+        node.getSchedule().printSchedule()
 
 
 #Inputs: reference schedule, current node from altern list, the game/practice we are finding in both schedules 
