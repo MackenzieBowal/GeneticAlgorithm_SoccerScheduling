@@ -17,7 +17,7 @@ state = []
 to do:
 start state DONE
 define fwert DONE
-define fselect
+define fselect ALMOST DONE
 '''
 
 
@@ -58,10 +58,14 @@ def rouletteSelect(stateList):
 # fWert()
 # returns an integer 0 for random generation, 1 for mutation/crossover, 2 for deletion
 def fWert():
+
+    # first 5 are randomly generated
     if len(state) < 5:
         return 0
+
     elif len(state) < 50:
         return 1
+        
     else:
         return 2
 
@@ -79,33 +83,36 @@ def fSelect(fWertScore):
         newSch.getSchedule()[0][1].gamemax = 2
         newSch.getSchedule()[2][1].gamemax = 2
         newSch.getSchedule()[4][1].gamemax = 2
-        newSch.print()
+        newSch.printSchedule()
 
         newSch.addGame(0, 1, 'CMSA U12T1 DIV 01')
         newSch.addGame(0, 1, 'CMSA U12T1 DIV 02')
-        newSch.print()
+        newSch.printSchedule()
         e = evalFunction.evalSecDiff(newSch)
         print("eval done: "+ str(e))
         '''
-        randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
-        if (randSchedule == None):
+        randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
+        while( randSchedule == None):
             print("Exception 1- no valid schedule found")
-        else:
+            randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
+
+        #else:
             # add random schedule to state
-            randSchedule.print()
-            state.append((randSchedule, evalFunction.eval(randSchedule)))
+        randSchedule.printSchedule()
+        state.append((randSchedule, evalFunction.eval(randSchedule)))
+        print("eval: "+str(state[0][1]))
 
-            '''
-            randSchedule.getSchedule()[0][2].games.clear()
-            randSchedule.getSchedule()[0][2].practices.clear()
+        '''
+        randSchedule.getSchedule()[0][2].games.clear()
+        randSchedule.getSchedule()[0][2].practices.clear()
 
-            print("evalMinFilled: "+str(evalFunction.evalMinFilled(randSchedule)))
-            print("evalPref: "+str(evalFunction.evalPref(randSchedule)))
-            print("evalPair: "+str(evalFunction.evalPair(randSchedule)))
-            print("evalSecDiff: "+str(evalFunction.evalSecDiff(randSchedule)))
+        print("evalMinFilled: "+str(evalFunction.evalMinFilled(randSchedule)))
+        print("evalPref: "+str(evalFunction.evalPref(randSchedule)))
+        print("evalPair: "+str(evalFunction.evalPair(randSchedule)))
+        print("evalSecDiff: "+str(evalFunction.evalSecDiff(randSchedule)))
 
-            print(str(evalFunction.eval(randSchedule)))
-            '''
+        print(str(evalFunction.eval(randSchedule)))
+        '''
 
 
     # mutation/crossover
@@ -115,6 +122,7 @@ def fSelect(fWertScore):
             # mutation
             sortState()
             indA = rouletteSelect(state)
+
         else:
             # crossover
             sortState()
@@ -130,21 +138,26 @@ def fSelect(fWertScore):
         sortState()
         state = state[5:]
 
+    return
 
-def runGeneticAlgorithm(s, vG, vP, g, p):
+
+def runGeneticAlgorithm(s, vG, vP, g, p, cb):
 
     global sched
     global validGameSlots 
     global validPracSlots 
     global gamesList
     global pracList
+    global constrBundle
     sched = s
     validGameSlots = vG
     validPracSlots = vP
     gamesList = g
     pracList = p
+    constrBundle = cb
 
     # start with an empty state, declared at the top of the file
+
     '''
     state.append(('five', 5))
     state.append(('too', 2))
@@ -158,12 +171,21 @@ def runGeneticAlgorithm(s, vG, vP, g, p):
     '''
 
     sortState()
-    '''
+
+    for i in range(5):
+        fw = fWert()
+
+        # note: fSelect also updates state
+        fSelect(fw)
+
+    sortState()
+
     for i in range(len(state)):
-        print(state[i][0] + str(state[i][1]))
-    '''
-    fSelect(0)
-    '''
+        print("eval state"+str(i) + " " + str(state[i][1]))
+
+    fSelect(2)
+
     for i in range(len(state)):
-        print(state[i][0] + str(state[i][1]))
-    '''
+        print("eval state "+str(i) + " " + str(state[i][1]))
+
+    

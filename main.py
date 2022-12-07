@@ -222,8 +222,8 @@ END EXAMPLE
 
 #EXAMPLE 2: CREATING A RANDOM, VALID SCHEDULE
 """
-
 constrBundle = ConstrBundle(notCompatible, unwanted, preferences, pair, partassign)
+"""
 repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
 if (repairedSchedule == None):
     print("Exception 1- no valid schedule found")
@@ -236,7 +236,7 @@ END EXAMPLE
 
 """
 #EXAMPLE 3: REPAIRING A SCHEDULE
-"""
+
 repairedSchedule = repairSchedule(sched, s1, True, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
 if (repairedSchedule == None):
    print("Exception 2- no valid schedule found")
@@ -248,4 +248,4 @@ END EXAMPLE
 
 evalFunction.initiateEval(wMinFilled, wPref, wPair, wSecDiff, penGameMin, penPracticeMin, preferences, penNotPaired, penSection, pair)
 
-runGeneticAlgorithm(sched, validGameSlots, validPracSlots, gamesList, pracList)
+runGeneticAlgorithm(sched, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
