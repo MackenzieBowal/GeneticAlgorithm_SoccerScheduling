@@ -7,6 +7,7 @@ from constants import *
 import schedule
 import node
 from queue import PriorityQueue
+import sys
 
 
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
@@ -39,7 +40,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         #Discuss edge case of there being no schedule to return with team, for now I am returning Python's version of Null
         #What behaviour should be exhibited for inputs that cannot create a valid schedule?
         if (listPossibleExpansions == []):
-            return None
+            sys.exit("A valid schedule can not be produced.")
 
         #Define fleaf - no separate function, it's just defined inside repairSchedule()
         print("Reached fleaf")
@@ -72,7 +73,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             #if all fringe schedules have been checked, then there is no valid schedule that can be produced
             if (fringe.empty()==True):
-                return None
+                sys.exit("A valid schedule can not be produced.")
             
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
