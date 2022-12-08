@@ -1,0 +1,9 @@
+Name: 
+CMSA U12T1S test - conflict with game
+ 
+Game slots: 
+TU, 17:00, 2, 1 
+ 
+Games: 
+CMSA U12T1S
+CMSA U12T1 DIV 01

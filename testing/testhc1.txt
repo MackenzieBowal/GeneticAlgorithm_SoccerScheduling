@@ -1,0 +1,11 @@
+Name: 
+Partassign violation test 
+ 
+Game slots: 
+TU, 9:30, 2, 1 
+ 
+Games: 
+CSMA U13T3 DIV  01 
+ 
+Partial assignments: 
+CSMA U13T3 DIV  01, MO, 8:00 
