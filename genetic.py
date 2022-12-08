@@ -255,7 +255,14 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
         fSelect(fw)
     
     sortState()
-    print("Final eval: "+str(state[len(state)-1][1]))
+    print("Eval-value: "+str(state[len(state)-1][1]))
+
+    assignment = state[len(state)-1][0].getAssignment()
+    assignment = sorted(assignment)
+
+    for assign in assignment:
+        print(assign[0]+"\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
+
 
     '''
     for i in range(len(state)):
