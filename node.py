@@ -17,7 +17,7 @@ class RepairNode:
         self.solEntry = 0
 
     def newNode(self):
-        return copy.copy(self)
+        return copy.deepcopy(self)
     
     def getID(self):
         return self._id
