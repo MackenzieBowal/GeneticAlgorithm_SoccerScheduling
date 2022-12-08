@@ -172,18 +172,4 @@ def oneBigConstr(sch, isGame, time, day):
 # THIS IS A SUPER BASIC IMPLEMENTATION OF CONSTR() TO TEST REPAIR TREE - THIS STILL NEEDS TO BE PROPERLY IMPLEMENTED BASED ON pg. 2 OF REPORT 
 def constr(sch, time, day):
 
-    #hc1 = check_hc1(sch)
-    #hc2 = check_hc2(sch)
-    #hc3 = check_hc3(sch)
-    '''
-    hc4 = check_hc4(sch)
-    hc5 = check_hc5(sch)
-    hc6 = check_hc6(sch)
-    hc7 = check_hc7(sch)
-    hc8 = check_hc8(sch)
-    hc9 = check_hc9(sch)
-    hc10 = check_hc10(sch)
-
-    return hc4 and hc5 and hc6 and hc7 and hc8 and hc9 and hc10
-    '''
     return oneBigConstr(sch, time, day)
