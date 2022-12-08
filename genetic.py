@@ -25,6 +25,13 @@ def sortState():
 # rouletteSelect()
 # takes a list of individuals and returns the one selected by a roulette function
 def rouletteSelect(stateList):
+    # 10% chance of picking some random individual
+    takeWorseIndividual = random.randint(0, 100)
+    if takeWorseIndividual < 10:
+        randomIndividual = random.randint(0, len(stateList)-1)
+        return stateList[randomIndividual]
+
+    # 90% chance of picking random individual in the top 5
     index = random.randint(1, 4)
     sorted(stateList, key=lambda s : s[1])
     print("\nstateList:")
