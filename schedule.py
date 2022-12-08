@@ -154,7 +154,8 @@ class Schedule:
                 return True
         return False
 
-    def addPractice(self, day, time, p):
+    def addPractice(self, day, time, p):        
+
         add = True
         if day == days['MO']:
             for i in range(0,2): #practices on M,W are an hour long

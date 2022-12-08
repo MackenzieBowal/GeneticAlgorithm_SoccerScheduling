@@ -24,13 +24,14 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     currentNode = rootNode
 
     counter = 0
-  
+    fringe =  PriorityQueue()
+
     while (continueExpandingTree):
         #Define and call Altern
 
-        print("Running Altern round: ", counter)
+        #print("Running Altern round: ", counter)
         counter += 1
-        currentNode.getSchedule().printSchedule()
+        #currentNode.getSchedule().printSchedule()
 
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
         
@@ -40,12 +41,18 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
         #Discuss edge case of there being no schedule to return with team, for now I am returning Python's version of Null
         #What behaviour should be exhibited for inputs that cannot create a valid schedule?
+
+        '''
+        If altern returns an empty list, that doesn't mean a valid schedule can't be produced. It just means
+        we need to try a different branch. It's only if the fringe is empty that a schedule can't be produced.
+
         if (listPossibleExpansions == []):
             #sys.exit("A valid schedule can not be produced.")
             return None
+        '''
 
         #Define fleaf - no separate function, it's just defined inside repairSchedule()
-        print("Reached fleaf")
+        #print("Reached fleaf")
 
         currentGameorPrac = ""
         #Find the current game/practice in discussion 
@@ -57,15 +64,15 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             pracAvailable = currentNode.getPracLeft()
             currentGameorPrac = pracAvailable[0]
 
-        #Create Priority Queue 
-        fringe =  PriorityQueue()
+        # Add expanded nodes to Priority Queue 
         for item in listPossibleExpansions:
             #if you want to generate a valid schedule without a reference, the useInspiration flag should be False
             if (useInspiration and follows(inspirationSchedule, item, currentGameorPrac)):
-                # Priority queue pulls items with lowest priority as most prioritized from the top, so we subtract 1 for higher priority (Note - this is not consistent with Proposal description)
+                # Priority queue pulls items with lowest number as most prioritized from the top, so we subtract 1 for higher priority 
+                # (Note - this is not consistent with Proposal description)
                 # We add the nodeID as argument because we need to break ties for priorities in the queue (Python syntax)
                 fringe.put(((item.getDepth()*2)-1, item.getID(), item))
-            else: 
+            else:
                 fringe.put(((item.getDepth()*2), item.getID(), item))
 
         #Loop is useful to come back to pre-populated fringe when the node selected has an invalid schedule 
@@ -75,25 +82,25 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             #if all fringe schedules have been checked, then there is no valid schedule that can be produced
             if (fringe.empty()==True):
-                #sys.exit("A valid schedule can not be produced.")
-                return None
+                sys.exit("A valid schedule cannot be produced.")
 
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
 
-            print("Reached ftrans")
+            #print("Reached ftrans")
             #Get Node from fleaf and Pass to ftrans
             output = ftrans(checkNode)
 
             #Used for debugging
-            print("the ftrans output is ", output)
+            #print("the ftrans output is ", output)
+            #print("fringe size is "+str(fringe.qsize()))
 
             if (output == 1):
                 #the schedule is complete and meets all hard constraints - DONE
                 return checkNode.getSchedule()
             elif (output == 2):
                 #the schedule is invalid and we need a new node from the fringe
-                continue 
+                continue
             elif (output == 3):
                 #the schedule is valid but incomplete and we pass this node to altern again 
                 currentNode = checkNode
@@ -112,51 +119,45 @@ def altern(currentNode, listValidGameSlots, listValidPracSlots):
 
     if (len(originalGamesLeft) > 0):
         #Loop through every possible timeslot in schedule 
-        for day in range(schedule.numDays):
-            for time in range(schedule.numTimeslots):
-                if ((day, time) in listValidGameSlots):
-                    copySchedule = currentSched.newSchedule()
-                    myGamesLeft = originalGamesLeft.copy()
-                    #print("trying to add game to day/time ", day, time)
-                    success = copySchedule.addGame(day, time, myGamesLeft[0])
-                    #print(success)
+        for (day, time) in listValidGameSlots:
+            copySchedule = currentSched.newSchedule()
+            myGamesLeft = originalGamesLeft.copy()
+            #print("trying to add game to day/time ", day, time)
+            success = copySchedule.addGame(day, time, myGamesLeft[0])
+            #print(success)
 
-                    if success:
-                        myGamesLeft.remove(myGamesLeft[0])
-
-                        copyNode = currentNode.newNode()
-                        copyNode.setSchedule(copySchedule)
-                        copyNode.setGamesLeft(myGamesLeft)
-                        copyNode.setDepth(currentNode.getDepth() + 1)
-                        #This is done because creating a copy of the current node also duplicates the ID
-                        copyNode.setUniqueID()
-                        listOfSchedules.append(copyNode)
-                    
-                    #if adding the game to the schedule fails for some technical reason (possibilities defined in schedule.py),
-                    #then we just continue looping through remaining time slots and ignore this one 
+            if success:
+                myGamesLeft.remove(myGamesLeft[0])
+                copyNode = currentNode.newNode()
+                copyNode.setSchedule(copySchedule)
+                copyNode.setGamesLeft(myGamesLeft)
+                copyNode.setDepth(currentNode.getDepth() + 1)
+                #This is done because creating a copy of the current node also duplicates the ID
+                copyNode.setUniqueID()
+                listOfSchedules.append(copyNode)
+            
+            #if adding the game to the schedule fails for some technical reason (possibilities defined in schedule.py),
+            #then we just continue looping through remaining time slots and ignore this one 
     elif (len(originalPracLeft) > 0):
         #Loop through every possible timeslot in schedule 
-        for day in range(schedule.numDays):
-            for time in range(schedule.numTimeslots):
-                if ((day, time) in listValidPracSlots):
-                    copySchedule = currentSched.newSchedule()
-                    myPracLeft = originalPracLeft.copy()
-                    #print("trying to add practice to day/time ", day, time)
-                    success = copySchedule.addPractice(day, time, myPracLeft[0])
+        for (day, time) in listValidPracSlots:
+            copySchedule = currentSched.newSchedule()
+            myPracLeft = originalPracLeft.copy()
+            #print("trying to add practice to day/time ", day, time)
+            success = copySchedule.addPractice(day, time, myPracLeft[0])
 
-                    if success:
-                        myPracLeft.remove(myPracLeft[0])
-
-                        copyNode = currentNode.newNode()
-                        copyNode.setSchedule(copySchedule)
-                        copyNode.setPracLeft(myPracLeft)
-                        copyNode.setDepth(currentNode.getDepth() + 1)
-                        #This is done because creating a copy of the current node also duplicates the ID
-                        copyNode.setUniqueID()
-                        listOfSchedules.append(copyNode)
-                    
-                    #if adding the practice to the schedule fails for some technical reason (possibilities defined in schedule.py),
-                    #then we just continue looping through remaining time slots and ignore this one
+            if success:
+                myPracLeft.remove(myPracLeft[0])
+                copyNode = currentNode.newNode()
+                copyNode.setSchedule(copySchedule)
+                copyNode.setPracLeft(myPracLeft)
+                copyNode.setDepth(currentNode.getDepth() + 1)
+                #This is done because creating a copy of the current node also duplicates the ID
+                copyNode.setUniqueID()
+                listOfSchedules.append(copyNode)
+            
+            #if adding the practice to the schedule fails for some technical reason (possibilities defined in schedule.py),
+            #then we just continue looping through remaining time slots and ignore this one
 
     else:
         return []
@@ -212,17 +213,10 @@ def follows(inspirationSchedule, currentNode, currentGameorPrac):
 
 
 #Inputs: Proposed node for expansion passed from fleaf 
-#Outputs: Integer - (1) complete, valid solution found (2) some hard constraints violated (3) incomplete schedule that is valid so far
+#Outputs: Integer - (1) it's a complete, valid solution (2) some hard constraints violated (3) incomplete schedule that is valid so far
 #Purpose: Supports expansion method in OR Tree 
 def ftrans(checkNode):
-    passesHardConstraints = False
-    if (len(checkNode.getGamesLeft()) > 0):
-        passesHardConstraints = constrFunction.constr(checkNode.getSchedule())
-    elif ((len(checkNode.getGamesLeft()) == 0) and (len(checkNode.getPracLeft()) > 0)):
-        passesHardConstraints = constrFunction.constr(checkNode.getSchedule())
-    else:
-        passesHardConstraints = constrFunction.constr(checkNode.getSchedule())
-
+    passesHardConstraints = constrFunction.constr(checkNode.getSchedule())
     # We don't need to explicitly change the sol-entry because if it is no, the node is discarded because it was already pulled from fringe 
     # If the sol-entry should be yes, we return this schedule in repairSchedule() anyways 
     # The default sol-entry in a node is ? so we don't need to change if the node is passed to altern 

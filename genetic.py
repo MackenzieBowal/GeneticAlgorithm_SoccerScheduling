@@ -10,6 +10,8 @@ import constants
 import evalFunction
 import random
 
+import constrFunction
+
 # state contains two objects for each individual: the schedule and its eval-score
 state = []
 
@@ -40,13 +42,13 @@ def rouletteSelect(stateList):
     for j in range(len(stateList)):
         fitnesses.append((totalEval - stateList[j][1])*1000)
         totalFitness += fitnesses[j]
-        print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
+        #print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
 
     num = random.randint(0, totalFitness)
     index = 0
 
     while num > 0:
-        print("num: "+str(num)+" index: "+str(index))
+        #print("num: "+str(num)+" index: "+str(index))
         num -= fitnesses[index]
         index += 1
     index -= 1
@@ -84,48 +86,48 @@ def fSelect(fWertScore):
     # random generation
     if fWertScore == 0:
 
-        '''
+        ''' debugging
         newSch = sched.newSchedule()
-        newSch.getSchedule()[0][1].gamemax = 2
-        newSch.getSchedule()[2][1].gamemax = 2
-        newSch.getSchedule()[4][1].gamemax = 2
-        newSch.printSchedule()
-
         newSch.addGame(0, 1, 'CMSA U12T1 DIV 01')
         newSch.addGame(0, 1, 'CMSA U12T1 DIV 02')
-        newSch.printSchedule()
-        e = evalFunction.evalSecDiff(newSch)
-        print("eval done: "+ str(e))
+        '''
+        newSch = sched.newSchedule()
+        for game in gamesList:
+            slotNum = random.randint(0, len(validGameSlots)-1)
+            slot = validGameSlots[slotNum]
+            worked = newSch.addGame(int(slot[0]), int(slot[1]), game)
+            while (not worked):
+                slotNum = random.randint(0, len(validGameSlots)-1)
+                slot = validGameSlots[slotNum]
+                worked = newSch.addGame(int(slot[0]), int(slot[1]), game)
+
+        for prac in pracList:
+            slotNum = random.randint(0, len(validPracSlots)-1)
+            slot = validPracSlots[slotNum]
+            worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac)
+            while (not worked):
+                slotNum = random.randint(0, len(validPracSlots)-1)
+                slot = validPracSlots[slotNum]
+                worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac)
+
+        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
+        state.append((randSchedule, evalFunction.eval(randSchedule)))
+        print("randomized eval: "+str(state[len(state)-1][1]))
+
+
         '''
         randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
-        while( randSchedule == None):
-            print("Exception 1- no valid schedule found")
-            randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
-
-        #else:
-            # add random schedule to state
-        randSchedule.printSchedule()
         state.append((randSchedule, evalFunction.eval(randSchedule)))
-        print("eval: "+str(state[0][1]))
-
+        print("randomized eval: "+str(state[0][1]))
         '''
-        randSchedule.getSchedule()[0][2].games.clear()
-        randSchedule.getSchedule()[0][2].practices.clear()
 
-        print("evalMinFilled: "+str(evalFunction.evalMinFilled(randSchedule)))
-        print("evalPref: "+str(evalFunction.evalPref(randSchedule)))
-        print("evalPair: "+str(evalFunction.evalPair(randSchedule)))
-        print("evalSecDiff: "+str(evalFunction.evalSecDiff(randSchedule)))
-
-        print(str(evalFunction.eval(randSchedule)))
-        '''
 
 
     # mutation/crossover
     elif fWertScore == 1:
         # 40% chance of mutation, 60% chance of crossover
-        #if (random.randint(0,100) < 40):
-        if (1 == 1):
+        if (random.randint(0,100) < 40):
+            print("mutating")
             # mutation
             sortState()
             indA = rouletteSelect(state)
@@ -183,12 +185,14 @@ def fSelect(fWertScore):
                 if (day != -1 and time != -1):
                     mutant.addPractice(day, time, prac)
                 else:
-                    sys.exit("Parent had no prac assigned")
+                    sys.exit("Parent had no practice assigned")
             
-            print("\nMUTANT SCHEDULE:")
-            mutant.printSchedule()
+            newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList)
+            state.append((newIndividual, evalFunction.eval(newIndividual)))
+            print("mutated eval: "+str(state[len(state)-1][1]))
 
         else:
+            print("crossovering")
             # crossover
             sortState()
             indA = rouletteSelect(state)
@@ -252,9 +256,9 @@ def fSelect(fWertScore):
                         child.addPractice(day, time, prac)
                         if (day != -1 and time != -1):
                             return
-            print("\nCHILD SCHEDULE: ")
-            child.printSchedule()
-
+            newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)
+            state.append((newIndividual, evalFunction.eval(newIndividual)))
+            print("mutated eval: "+str(state[len(state)-1][1]))
 
     # delete bottom 5 
     elif fWertScore == 2:
@@ -308,13 +312,15 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     '''
     random.seed()
     sortState()
-
-    for i in range(5):
+    
+    for i in range(10):
         fw = fWert()
-
         # note: fSelect also updates state
         fSelect(fw)
-
+    
+    sortState()
+    print("Final eval: "+str(state[len(state)-1][1]))
+    '''
     sortState()
 
     for i in range(len(state)):
@@ -324,4 +330,5 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
 
     for i in range(len(state)):
         print("eval state "+str(i) + " " + str(state[i][1]))
+    '''
 

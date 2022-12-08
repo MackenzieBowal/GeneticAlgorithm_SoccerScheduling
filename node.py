@@ -41,7 +41,7 @@ class RepairNode:
         self._id = id(self)
 
     def setSchedule(self, newSchedule):
-        self.mySched = newSchedule
+        self.mySched = copy.copy(newSchedule)
 
     def setGamesLeft(self, newGamesLeft):
         self.gamesLeft = newGamesLeft
