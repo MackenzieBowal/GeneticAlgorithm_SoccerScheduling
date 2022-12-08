@@ -123,7 +123,7 @@ def altern(currentNode, listValidGameSlots, listValidPracSlots):
             copySchedule = currentSched.newSchedule()
             myGamesLeft = originalGamesLeft.copy()
             #print("trying to add game to day/time ", day, time)
-            success = copySchedule.addGame(day, time, myGamesLeft[0])
+            success = copySchedule.addGame(day, time, myGamesLeft[0], listValidGameSlots)
             #print(success)
 
             if success:
@@ -144,7 +144,7 @@ def altern(currentNode, listValidGameSlots, listValidPracSlots):
             copySchedule = currentSched.newSchedule()
             myPracLeft = originalPracLeft.copy()
             #print("trying to add practice to day/time ", day, time)
-            success = copySchedule.addPractice(day, time, myPracLeft[0])
+            success = copySchedule.addPractice(day, time, myPracLeft[0], listValidPracSlots)
 
             if success:
                 myPracLeft.remove(myPracLeft[0])
