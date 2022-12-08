@@ -10,6 +10,8 @@ import constants
 import evalFunction
 import random
 
+import constrFunction
+
 # state contains two objects for each individual: the schedule and its eval-score
 state = []
 
@@ -97,11 +99,30 @@ def fSelect(fWertScore):
         e = evalFunction.evalSecDiff(newSch)
         print("eval done: "+ str(e))
         '''
+
+        newSch = sched.newSchedule()
+        #newSch.addPractice('CMSA U8T1 DIV 01 PRC 02', 1, 18)
+        
+
+        passed = constrFunction.check_hc1(newSch)
+
+        if passed:
+            print("passed constr")
+        else:
+            print("did not pass constr")
+
+        return
+
+
+
+
+
         randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
+        '''
         while( randSchedule == None):
             print("Exception 1- no valid schedule found")
             randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
-
+        '''
         #else:
             # add random schedule to state
         randSchedule.printSchedule()
@@ -309,12 +330,15 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     random.seed()
     sortState()
 
+    print("Running fSelect")
+    fSelect(0)
+    '''
     for i in range(5):
         fw = fWert()
 
         # note: fSelect also updates state
         fSelect(fw)
-
+    
     sortState()
 
     for i in range(len(state)):
@@ -324,4 +348,5 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
 
     for i in range(len(state)):
         print("eval state "+str(i) + " " + str(state[i][1]))
+    '''
 

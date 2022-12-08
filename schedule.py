@@ -28,6 +28,7 @@ class Timeslot:
         self.games.append(g)
     
     def addPractice(self, p):
+        print("adding practice "+p)
         self.practices.append(p)
     
     def setGamemax(self, m):

@@ -19,11 +19,12 @@ def initiateConstr(gl, pl, vgs, vps, nc, unw, pref, pr, pa):
 def check_hc1(sch):
     sched = sch.getSchedule()
     for assign in partAssign:
-        league_tier_div = assign[0]
+        gameorprac = assign[0]
         day = assign[1]
         time = assign[2]
         games_list = sched[days[day]][times[time]].getGames()
-        if(league_tier_div not in games_list):
+        prac_list = sched[days[day]][times[time]].getPractices()
+        if (gameorprac not in games_list) and (gameorprac not in prac_list):
             return False
     
     return True
@@ -283,15 +284,23 @@ def check_hc15(sch):
 
 
 # THIS IS A SUPER BASIC IMPLEMENTATION OF CONSTR() TO TEST REPAIR TREE - THIS STILL NEEDS TO BE PROPERLY IMPLEMENTED BASED ON pg. 2 OF REPORT 
-def constr(sch):
+def constr(sch, partialFlag, gl, pl):
+
+    global gamesLeft
+    global pracsLeft
+    gamesLeft = gl
+    pracsLeft = pl
+    gamesDoneFlag = False
+    pracDoneFlag = False
+
+    if len(gamesLeft) == 0:
+        gamesDoneFlag = True
+
+    if len(pracsLeft) == 0:
+        pracDoneFlag = True
 
 
-    partialFlag = True
-
-    # Check if schedule is complete or not
-    if (len(sch.getAssignment()) == len(gamesList) + len(pracList) + len(partAssign)):
-        partialFlag = False
-
+    # Check hard constraints for a complete schedule
     if(not partialFlag):
        hc1 = check_hc1(sch)
        hc2 = check_hc2(sch)
@@ -312,6 +321,7 @@ def constr(sch):
        return hc1 and hc2 and hc3 and hc4 and hc5 and hc6 and hc7 and hc8 \
            and hc9 and hc10 and hc11 and hc12 and hc13 and hc14 and hc15
     
+    # check hard constraints for a partial schedule
     else:
         if(gamesDoneFlag):
             hc1 = check_hc1(sch)
@@ -348,6 +358,7 @@ def constr(sch):
 
             return  hc1 and hc2 and hc3 and hc4 and hc5 and hc8 and \
             hc10 and hc11 and hc12 and hc13 and hc14 and hc15
+            
         else:
             hc1 = check_hc1(sch)
             hc2 = check_hc2(sch)
