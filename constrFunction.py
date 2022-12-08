@@ -73,10 +73,9 @@ def oneBigConstr(sch, isGame, currGameOrPrac):
         return False
 
     # hc9
-    for game1 in slotGames:
-        if ("U15" in game1 or "U16" in game1 or "U17" in game1 or "U19" in game1):
+    if(("U15" in currGameOrPrac or "U16" in currGameOrPrac or "U17" in currGameOrPrac or "U19" in currGameOrPrac) and isGame):
             for game2 in slotGames:
-                if ("U15" in game2 or "U16" in game2 or "U17" in game2 or "U19" in game2) and (game1 != game2):
+                if ("U15" in game2 or "U16" in game2 or "U17" in game2 or "U19" in game2) and (currGameOrPrac != game2):
                     return False
 
     # hc10
