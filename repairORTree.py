@@ -26,11 +26,11 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     counter = 0
     fringe =  PriorityQueue()
 
-    
+
     while (continueExpandingTree):
         #Define and call Altern
 
-        #print("Running Altern round: ", counter)
+        print("Running Altern round: ", counter)
         counter += 1
         #currentNode.getSchedule().printSchedule()
 
