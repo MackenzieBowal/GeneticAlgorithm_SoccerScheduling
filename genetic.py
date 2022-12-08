@@ -25,28 +25,12 @@ def sortState():
 # rouletteSelect()
 # takes a list of individuals and returns the one selected by a roulette function
 def rouletteSelect(stateList):
-    totalEval = 0
-    for i in range(len(stateList)):
-        totalEval += stateList[i][1]
-    
-    fitnesses = []
-    totalFitness = 0
-
-    for j in range(len(stateList)):
-        fitnesses.append((totalEval - stateList[j][1])*1000)
-        totalFitness += fitnesses[j]
-        #print("individual "+str(j)+" "+str(stateList[j][1])+" has fitness "+str(fitnesses[j]))
-
-    num = random.randint(0, totalFitness)
-    index = 0
-
-    while num > 0:
-        #print("num: "+str(num)+" index: "+str(index))
-        num -= fitnesses[index]
-        index += 1
-    index -= 1
-
-    return stateList[index]
+    index = random.randint(1, 4)
+    sorted(stateList, key=lambda s : s[1])
+    print("\nstateList:")
+    print(str(stateList))
+    print("\n")
+    return stateList[len(stateList)-index]
 
 # find which timeslot a schedule contains a game or practice
 def findTimeslot(sch, gameprac):

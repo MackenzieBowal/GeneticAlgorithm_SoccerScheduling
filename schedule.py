@@ -280,4 +280,3 @@ class Schedule:
                 else:
                     print("")
             print("")
-            
