@@ -13,7 +13,10 @@ import evalFunction
 #python main.py test.txt 1 0 1 0 10 10 10 10
 #python main.py test2.txt 1 0 1 0 10 10 10 10
 
-
+global u12t1exists
+u12t1exists = False 
+global u13t1exists
+u13t1exists = False
 """
 parse()
 Input: One text file
@@ -96,18 +99,19 @@ def parse(file):
             elif category == "G":
                 global numGamesTotal
                 numGamesTotal+=1
-                if ("CMSA U12T1" in line or "CMSA U13T1" in line):
-                    global specialGamesExist
-                    specialGamesExist = True
+                if "CMSA U12T1" in line:
+                    global u12t1exists
+                    u12t1exists = True
+                    specialGamesList.append(line)
+                elif "CMSA U13T1" in line:
+                    global u13t1exists
+                    u13t1exists = True
                     specialGamesList.append(line)
                 gamesList.append(line)
             
             elif category == "P":
                 global numPracsTotal
                 numPracsTotal+=1
-                if ("CMSA U12T1S" in line or "CMSA U13T1S" in line):
-                    global specialPracsExist
-                    specialPracsExist = True
                 pracList.append(line)
             
             elif category == "NC":
@@ -196,31 +200,16 @@ if (numPracsTotal > numPracSpaces):
     sys.exit("Too many practices for the number of slots")
 
 # Automatically assign hard constraint practices
-if (specialPracsExist):
-    if (specialGamesExist):
-        # U12T1S first
-        for prac in pracList:
-            if ("CMSA U12T1S" in prac):
-                components = prac.split(" ")
-                divNum = components[len(components)-1].strip()
-                for game in gamesList:
-                    if ("CMSA U12T1" in game and (divNum in game or len(components) < 6)):
-                        print("assigning CMSA U12T1S")
-                        worked = sched.addPractice(days['TU'], times['18:00'], prac, validPracSlots)
-                        pracList.remove(prac)
-                        if (not worked):
-                            sys.exit("\nCould not allocate CMSA U12T1S to a valid practice slot\n")
-        # U13T1S second
-        for prac in pracList:
-            if ("CMSA U13T1S" in prac):
-                components = prac.split(" ")
-                divNum = components[len(components)-1].strip()
-                for game in gamesList:
-                    if ("CMSA U13T1" in game and (divNum in game or len(components) < 6)):
-                        worked = sched.addPractice(days['TU'], times['18:00'], prac, validPracSlots)
-                        pracList.remove(prac)
-                        if (not worked):
-                            sys.exit("\nCould not allocate CMSA U13T1S to a valid practice slot\n")
+if (u12t1exists):
+    print("assigning CMSA U12T1S")
+    worked = sched.addPractice(days['TU'], times['18:00'], "CMSA U12T1S", validPracSlots)
+    if (not worked):
+        sys.exit("\nCould not allocate CMSA U12T1S to a valid practice slot. Cannot find a valid solution\n")
+if (u13t1exists):
+    print("assigning CMSA U13T1S")
+    worked = sched.addPractice(days['TU'], times['18:00'], "CMSA U13T1S", validPracSlots)
+    if (not worked):
+        sys.exit("\nCould not allocate CMSA U13T1S to a valid practice slot. Cannot find a valid solution.\n")
 
 
 
