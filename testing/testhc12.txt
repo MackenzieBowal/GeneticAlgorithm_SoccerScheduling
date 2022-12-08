@@ -1,0 +1,8 @@
+Name: 
+Tuesday 11:00-12:30 violation test 
+ 
+Game slots: 
+TU, 11:00, 3, 0
+ 
+Games: 
+CSMA U17T1 DIV 01

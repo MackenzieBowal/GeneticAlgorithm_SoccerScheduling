@@ -1,0 +1,12 @@
+KNOWN BUGS:
+
+Issue 1:
+	CSMA U12T1S should not overlap with any games/practices in CSMA U12T1 but the program generates schedules where they do
+		Problem with function: repairORTree.check_hc14()
+
+	CSMA U13T1S should not overlap with any games/practices in CSMA U13T1 but the program generates schedules where they do
+		Problem with function: repairORTree.check_hc15()
+
+Issue 2:
+	The program sometimes terminates with error message "A valid schedule can not be produced." when a valid schedule is possible
+		Problem with function: ?

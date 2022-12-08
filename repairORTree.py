@@ -40,8 +40,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         #Discuss edge case of there being no schedule to return with team, for now I am returning Python's version of Null
         #What behaviour should be exhibited for inputs that cannot create a valid schedule?
         if (listPossibleExpansions == []):
-            #sys.exit("A valid schedule can not be produced.")
-            return None
+            sys.exit("A valid schedule can not be produced.")
+            #return None
 
         #Define fleaf - no separate function, it's just defined inside repairSchedule()
         print("Reached fleaf")
@@ -74,9 +74,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             #if all fringe schedules have been checked, then there is no valid schedule that can be produced
             if (fringe.empty()==True):
-                #sys.exit("A valid schedule can not be produced.")
-                return None
-
+                sys.exit("A valid schedule can not be produced.")
+                
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
 
@@ -236,6 +235,7 @@ def ftrans(checkNode, constrBundle):
         return 3
 
 def check_hc1(someSchedule, partAssign):
+#Also checks hc2 because CSMA U12T1S and CSMA U13T1S are added to partAssign if they are in the input
     sched = someSchedule.getSchedule()
     for assign in partAssign:
         league_tier_div = assign[0]
@@ -245,40 +245,9 @@ def check_hc1(someSchedule, partAssign):
         if(league_tier_div not in games_list):
             return False
     
-    return True
+    return True      
 
-
-#Checks to make sure there are no practices for CSMA U12T1S and CSMA U13T1S between 6 and 7 on
-#Tuesdays and Thursdays
-#Should be true for partial schedules. 
-
-def check_hc2(someSchedule):
-    sched = someSchedule.getSchedule()
-    prac_at_six = sched[days["TU"]][20].getPractices()
-    for prac in prac_at_six:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
-    
-    prac_at_six_thirty = sched[days["TU"]][20].getPractices()
-    for prac in prac_at_six_thirty:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
-
-    prac_at_six = sched[days["TH"]][20].getPractices()
-    for prac in prac_at_six:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
-
-    prac_at_six_thirty = sched[days["TH"]][20].getPractices()
-    for prac in prac_at_six_thirty:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
-
-    return True
-
-    
-
-#Checks to see if there are ever more games assigned then game max. 
+#Checks to see if there are ever more games assigned than game max. 
 #Should always be satisfied, even in partial schedules. 
 
 def check_hc3(someSchedule):
@@ -306,10 +275,10 @@ def check_hc5(someSchedule):
     for day in someSchedule.getSchedule():
         for timeslot in day:
             for game in timeslot.getGames():
-                if(game in timeslot.getPractices()):
-                    return False
+                for practice in timeslot.getPractices():
+                    if game in practice:
+                        return False
     return True
-
 
 def check_hc6(someSchedule, uncompatible):
     for a, b in uncompatible:
@@ -384,17 +353,17 @@ def check_hc9(someSchedule):
 
 
 
-##Checks to make sure games in DIV 9 are not scheduled before 18:00
+##Checks to make sure games in DIV 9x are not scheduled before 18:00
 ##should pass on all partial schedules. 
 
 def check_hc10(someSchedule):
     for day in someSchedule.getSchedule():
         for time in range(times["18:00"]):
             for games in day[time].getGames():
-                if(games.split()[3] == "09"):
+                if(games.split()[3][0] == '9'):
                     return False
             for prac in day[time].getPractices():
-                if(prac.split()[3] == "09"):
+                if(prac.split()[3][0] == '9'):
                     return False
     return True
     
@@ -455,50 +424,38 @@ def check_hc13(someSchedule):
     return True
                     
 
-#Checks to make sure that no games in the tear div U12T1S is in the same gameslot. 
+#Checks to make sure that the game CSMA U12T1S does not overlap with games or practices in the same tier. 
 #Should pass all partial schedules. 
 
 def check_hc14(someSchedule):
-    for day in someSchedule.getSchedule():
-        for timeslot in day:
-            u12T1S = False
-            for game in timeslot.getGames():
-                tier_div = game[1]
-                if(tier_div == "U12T1S"):
-                    if(not u12T1S): 
-                        u12T1S = True
-                    else: 
-                        return False
-            for prac in timeslot.getPractices():
-                tier_div = prac[1]
-                if(tier_div == "U12T1S"):
-                    if(not u12T1S): 
-                        u12T1S = True
-                    else: 
-                        return False
-
+    sched = someSchedule.getSchedule()
+    timeslot = sched[days["TU"]][times["18:00"]]
+    if "CSMA U12T1S" in timeslot.getGames():
+        for game in timeslot.getGames():
+            if game[len(game)-1] == 'S':
+                if "CSMA U12T1" in game:
+                    return False
+        for practice in timeslot.getPractices():
+            if "CSMA U12T1" in practice:
+                return False
+                
     return True
                 
-#Checks to make sure that no games in the tear div U13T1S is in the same gameslot. 
+#Checks to make sure that the game CSMA U13T1S does not overlap with games or practices in the same tier. 
 #Should pass all partial schedules. 
 
-
 def check_hc15(someSchedule):
-    for day in someSchedule.getSchedule():
-        for timeslot in day:
-            u13T1S = False
-            for game in timeslot.getGames():
-                tier_div = game[1]
-                if(tier_div == "U13T1S"):
-                    if(not u13T1S): 
-                        u13T1S = True
-                    else: 
-                        return False
-                if(tier_div == "U13T1S"):
-                    if(not u13T1S): 
-                        u13T1S = True
-                    else: 
-                        return False
+    sched = someSchedule.getSchedule()
+    timeslot = sched[days["TU"]][times["18:00"]]
+    if "CSMA U13T1S" in timeslot.getGames():
+        for game in timeslot.getGames():
+            if game[len(game)-1] == 'S':
+                if "CSMA U13T1" in game:
+                    return False
+        for practice in timeslot.getPractices():
+            if "CSMA U13T1" in practice:
+                return False
+                
     return True
                 
 
@@ -507,7 +464,6 @@ def check_hc15(someSchedule):
 def constr(someSchedule, partialFlag, gamesDoneFlag, pracDoneFlag, constrBundle):
     if(not partialFlag):
        hc1 = check_hc1(someSchedule, constrBundle.partAssign)
-       hc2 = check_hc2(someSchedule)
        hc3 = check_hc3(someSchedule)
        hc4 = check_hc4(someSchedule)
        hc5 = check_hc5(someSchedule)
@@ -522,13 +478,12 @@ def constr(someSchedule, partialFlag, gamesDoneFlag, pracDoneFlag, constrBundle)
        hc14 = check_hc14(someSchedule)
        hc15 = check_hc15(someSchedule)
 
-       return hc1 and hc2 and hc3 and hc4 and hc5 and hc6 and hc7 and hc8 \
+       return hc1 and hc3 and hc4 and hc5 and hc6 and hc7 and hc8 \
            and hc9 and hc10 and hc11 and hc12 and hc13 and hc14 and hc15
     
     else:
         if(gamesDoneFlag):
             hc1 = check_hc1(someSchedule, constrBundle.partAssign)
-            hc2 = check_hc2(someSchedule)
             hc3 = check_hc3(someSchedule)
             hc4 = check_hc4(someSchedule)
             hc5 = check_hc5(someSchedule)
@@ -541,12 +496,11 @@ def constr(someSchedule, partialFlag, gamesDoneFlag, pracDoneFlag, constrBundle)
             hc14 = check_hc14(someSchedule)
             hc15 = check_hc15(someSchedule)
 
-            return hc1 and hc2 and hc3 and hc4 and hc5  and hc6 and hc7 and \
+            return hc1 and hc3 and hc4 and hc5  and hc6 and hc7 and \
             hc10 and hc11 and hc12 and hc13 and hc15
         
         elif(pracDoneFlag):
             hc1 = check_hc1(someSchedule, constrBundle.partAssign)
-            hc2 = check_hc2(someSchedule)
             hc3 = check_hc3(someSchedule)
             hc4 = check_hc4(someSchedule)
             hc5 = check_hc5(someSchedule)
@@ -559,11 +513,10 @@ def constr(someSchedule, partialFlag, gamesDoneFlag, pracDoneFlag, constrBundle)
             hc14 = check_hc14(someSchedule)
             hc15 = check_hc15(someSchedule)
 
-            return  hc1 and hc2 and hc3 and hc4 and hc5 and hc8 and \
+            return  hc1 and hc3 and hc4 and hc5 and hc8 and \
             hc10 and hc11 and hc12 and hc13 and hc14 and hc15
         else:
             hc1 = check_hc1(someSchedule, constrBundle.partAssign)
-            hc2 = check_hc2(someSchedule)
             hc3 = check_hc3(someSchedule)
             hc4 = check_hc4(someSchedule)
             hc5 = check_hc5(someSchedule)
@@ -576,5 +529,5 @@ def constr(someSchedule, partialFlag, gamesDoneFlag, pracDoneFlag, constrBundle)
             hc14 = check_hc14(someSchedule)
             hc15 = check_hc15(someSchedule)
 
-            return hc1 and hc2 and hc3 and hc4 and hc5 and hc6 and \
+            return hc1 and hc3 and hc4 and hc5 and hc6 and \
             hc10 and hc11 and hc12 and hc13 and hc14 and hc15

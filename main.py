@@ -101,7 +101,16 @@ def parse(file):
                 validPracSlots.append((day, time))
             
             elif category == "G":
-                gamesList.append(line)
+                while '  ' in line:
+                    line = line.replace('  ', ' ')
+                game = line.strip()
+                if game[len(game)-1] == 'S': #Hard constraint 2
+                    slot = sched.schedule[days["TU"]][times["18:00"]]
+                    sched.setGamemax(days["TU"],times["18:00"],slot.getGameMax()+1)
+                    sched.addGame(days["TU"],times["18:00"],game)
+                    partassign.append(tuple([game, "TU", "18:00"]))
+                else:
+                    gamesList.append(line)
             
             elif category == "P":
                 pracList.append(line)
@@ -139,11 +148,17 @@ def parse(file):
                 day = components[1].strip()
                 time = components[2].strip()
                 if ("PRC" in game) or ("OPN" in game):
-                    sched.addPractice(days[day], times[time], game)
-                    pracList.remove(game)
+                    if (day,time) in validGameSlots:
+                        sched.addPractice(days[day], times[time], game)
+                        pracList.remove(game)
+                    else:
+                        sys.exit("Partial assignment to an invalid time slot!")
                 else:
-                    sched.addGame(days[day], times[time], game)
-                    gamesList.remove(game)
+                    if (day,time) in validPracSlots:
+                        sched.addGame(days[day], times[time], game)
+                        gamesList.remove(game)
+                    else:
+                        sys.exit("Partial assignment to an invalid time slot!")
                 partassign.append(tuple([game, day, time]))
     return sched
 
@@ -175,8 +190,8 @@ except: sys.exit("Must provide a program description in a text file.")
 
 sched = parse(file)
 
-print("sched:")
-sched.print()
+constrBundle = ConstrBundle(notCompatible, unwanted, preferences, pair, partassign)
+
 print("Games:", gamesList)
 print("Practices:", pracList)
 print("Not compatible:", notCompatible)
@@ -217,13 +232,11 @@ print("this is the potentially invalid schedule that we want to repair")
 s1.print() #prints the schedule
 
 END EXAMPLE
+"""
 
-
-
+"""
 #EXAMPLE 2: CREATING A RANDOM, VALID SCHEDULE
-"""
-constrBundle = ConstrBundle(notCompatible, unwanted, preferences, pair, partassign)
-"""
+
 repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
 if (repairedSchedule == None):
     print("Exception 1- no valid schedule found")

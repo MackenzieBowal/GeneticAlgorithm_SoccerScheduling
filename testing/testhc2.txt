@@ -1,0 +1,9 @@
+Name: 
+CMSA U12T1S test
+ 
+Game slots: 
+MO, 9:00, 2, 0
+TU, 18:30, 2, 1 
+ 
+Games: 
+CMSA U12T1S
