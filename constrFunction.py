@@ -16,7 +16,7 @@ def initiateConstr(gl, pl, vgs, vps, nc, unw, pref, pr, pa):
     pair = pr
     partAssign = pa
 
-# Check partial assignments
+# Check partial assignments                                                             DONE
 def check_hc1(sch):
     sched = sch.getSchedule()
     for assign in partAssign:
@@ -33,28 +33,30 @@ def check_hc1(sch):
 
 #Checks to make sure there are no practices for CSMA U12T1S and CSMA U13T1S between 6 and 7 on
 #Tuesdays and Thursdays
-#Should be true for partial schedules. 
+#Should be true for all schedules because these practices are added in the parser                   DONE
 def check_hc2(sch):
     sched = sch.getSchedule()
-    prac_at_six = sched[days["TU"]][20].getPractices()
-    for prac in prac_at_six:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
-    
-    prac_at_six_thirty = sched[days["TU"]][20].getPractices()
-    for prac in prac_at_six_thirty:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
+    for prac in pracList:
+        if ("CMSA U12T1S" in prac or "CMSA U13T1S" in prac):
+            Tues_at_six = sched[days["TU"]][times["18:00"]].getPractices()
+            for prac in Tues_at_six:
+                if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
+                    return False
+            
+            Tues_at_six_thirty = sched[days["TU"]][times['18:30']].getPractices()
+            for prac in Tues_at_six_thirty:
+                if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
+                    return False
 
-    prac_at_six = sched[days["TH"]][20].getPractices()
-    for prac in prac_at_six:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
+            Thurs_at_six = sched[days["TH"]][times["18:00"]].getPractices()
+            for prac in Thurs_at_six:
+                if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
+                    return False
 
-    prac_at_six_thirty = sched[days["TH"]][20].getPractices()
-    for prac in prac_at_six_thirty:
-        if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
-            return False
+            Thurs_at_six_thirty = sched[days["TH"]][times["18:00"]].getPractices()
+            for prac in Thurs_at_six_thirty:
+                if (prac.split()[0] == "CSMA" and (prac.split()[1] == "U12T1S" or prac.split()[1] == "U13T1S")):
+                    return False
 
     return True
 
@@ -239,6 +241,11 @@ def check_hc13(sch):
 #Should pass all partial schedules. 
 
 def check_hc14(sch):
+
+    for i in range(len(days)):
+        for i in range(len(times)):
+            pass
+
     for day in sch.getSchedule():
         for timeslot in day:
             u12T1S = False
