@@ -258,7 +258,7 @@ def fSelect(fWertScore):
                             return
             newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)
             state.append((newIndividual, evalFunction.eval(newIndividual)))
-            print("mutated eval: "+str(state[len(state)-1][1]))
+            print("crossovered eval: "+str(state[len(state)-1][1]))
 
     # delete bottom 5 
     elif fWertScore == 2:
