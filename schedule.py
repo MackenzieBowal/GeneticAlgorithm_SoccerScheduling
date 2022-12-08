@@ -114,7 +114,7 @@ class Schedule:
         print(sorted(self.assignment))
 
     def newSchedule(self):
-        return copy.copy(self)
+        return copy.deepcopy(self)
     
     def getAssignment(self):
         return self.assignment
@@ -280,4 +280,3 @@ class Schedule:
                 else:
                     print("")
             print("")
-            
