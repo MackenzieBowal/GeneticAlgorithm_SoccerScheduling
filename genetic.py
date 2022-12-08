@@ -249,7 +249,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     random.seed()
     sortState()
     
-    for i in range(100):
+    for i in range(10):
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)
@@ -261,11 +261,10 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     assignment = sorted(assignment)
 
     for assign in assignment:
-        print(assign[0]+"\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
-
-
-    '''
-    for i in range(len(state)):
-        print("eval state "+str(i) + " " + str(state[i][1]))
-    '''
+        if (len(assign[0])<16):
+            print(assign[0]+"\t\t\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
+        elif (len(assign[0])<23):
+            print(assign[0]+"\t\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
+        else:
+            print(assign[0]+"\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
 
