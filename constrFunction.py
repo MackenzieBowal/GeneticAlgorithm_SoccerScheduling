@@ -16,6 +16,7 @@ def initiateConstr(gl, pl, vgs, vps, nc, unw, pref, pr, pa):
     pair = pr
     partAssign = pa
 
+# Check partial assignments
 def check_hc1(sch):
     sched = sch.getSchedule()
     for assign in partAssign:
@@ -33,7 +34,6 @@ def check_hc1(sch):
 #Checks to make sure there are no practices for CSMA U12T1S and CSMA U13T1S between 6 and 7 on
 #Tuesdays and Thursdays
 #Should be true for partial schedules. 
-
 def check_hc2(sch):
     sched = sch.getSchedule()
     prac_at_six = sched[days["TU"]][20].getPractices()

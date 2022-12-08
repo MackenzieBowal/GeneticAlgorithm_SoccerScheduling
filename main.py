@@ -93,7 +93,13 @@ def parse(file):
                 gamesList.append(line)
             
             elif category == "P":
-                pracList.append(line)
+                # Automatically assign hard constraint practices
+                if ("CMSA U12T1S" in line or "CMSA U13T1S" in line):
+                    worked = sched.addPractice(days['TU'], times['18:00'], line)
+                    if (not worked):
+                        sys.exit("\nCould not allocate CMSA U12T1S or CMSA U13T1S to a valid practice slot\n")
+                else:
+                    pracList.append(line)
             
             elif category == "NC":
                 components = line.split(",")

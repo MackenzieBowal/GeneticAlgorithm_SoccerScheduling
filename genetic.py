@@ -104,7 +104,7 @@ def fSelect(fWertScore):
         #newSch.addPractice('CMSA U8T1 DIV 01 PRC 02', 1, 18)
         
 
-        passed = constrFunction.check_hc1(newSch)
+        passed = constrFunction.check_hc2(newSch)
 
         if passed:
             print("passed constr")
