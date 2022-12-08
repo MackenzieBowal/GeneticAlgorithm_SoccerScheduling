@@ -13,7 +13,7 @@ class RepairNode:
         self.gamesLeft = []
         self.pracLeft = []
         self.depth = 0
-        #sol-entry [? = 0, yes = 1, no = 2]
+        # sol-entry [? = 0, yes = 1, no = 2]
         self.solEntry = 0
 
     def newNode(self):

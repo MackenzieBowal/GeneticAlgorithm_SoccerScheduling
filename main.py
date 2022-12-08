@@ -14,17 +14,6 @@ import evalFunction
 #python main.py test2.txt 1 0 1 0 10 10 10 10
 
 
-class ConstrBundle:
-
-    def __init__(self, notCompatible, unwanted, preferences, pair, partAssign):
-        self.notCompatible = notCompatible
-        self.unwanted = unwanted
-        self.preferences = preferences
-        self.pair = pair
-        self.partAssign = partAssign
-
-
-
 """
 parse()
 Input: One text file
@@ -222,7 +211,6 @@ END EXAMPLE
 
 #EXAMPLE 2: CREATING A RANDOM, VALID SCHEDULE
 """
-constrBundle = ConstrBundle(notCompatible, unwanted, preferences, pair, partassign)
 """
 repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
 if (repairedSchedule == None):
@@ -247,5 +235,6 @@ END EXAMPLE
 """
 
 evalFunction.initiateEval(wMinFilled, wPref, wPair, wSecDiff, penGameMin, penPracticeMin, preferences, penNotPaired, penSection, pair)
+constrFunction.initiateConstr(gamesList, pracList, validGameSlots, validPracSlots, notCompatible, unwanted, preferences, pair, partassign)
 
-runGeneticAlgorithm(sched, validGameSlots, validPracSlots, gamesList, pracList, constrBundle, partassign)
+runGeneticAlgorithm(sched, validGameSlots, validPracSlots, gamesList, pracList, partassign)

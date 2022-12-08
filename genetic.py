@@ -97,10 +97,10 @@ def fSelect(fWertScore):
         e = evalFunction.evalSecDiff(newSch)
         print("eval done: "+ str(e))
         '''
-        randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
+        randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
         while( randSchedule == None):
             print("Exception 1- no valid schedule found")
-            randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
+            randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
 
         #else:
             # add random schedule to state
@@ -264,21 +264,19 @@ def fSelect(fWertScore):
     return
 
 
-def runGeneticAlgorithm(s, vG, vP, g, p, cb, pa):
+def runGeneticAlgorithm(s, vG, vP, g, p, pa):
 
     global sched
     global validGameSlots 
     global validPracSlots 
     global gamesList
     global pracList
-    global constrBundle
     global partAssign
     sched = s
     validGameSlots = vG
     validPracSlots = vP
     gamesList = g
     pracList = p
-    constrBundle = cb
     partAssign = pa
 
     # create a list of games and practices that are not automatically assigned
