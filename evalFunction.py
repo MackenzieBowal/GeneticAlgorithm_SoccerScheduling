@@ -43,8 +43,9 @@ def evalPref(assign):
         if (t[2] not in slotGames and t[2] not in slotPractices):
             penalty += int(t[3])
     return penalty
-    
+
 def evalPair(assign):
+
     penalty = 0
     global pair
     pairCopy = deepcopy(pair)
@@ -53,8 +54,8 @@ def evalPair(assign):
             slotGames = assign.getSchedule()[day][time].games
             slotPractices = assign.getSchedule()[day][time].practices
             for p in pairCopy:
-                if ((p[0] in slotGames or p[0] in slotPractices) and (p[1] not in slotGames or p[1] not in slotPractices)) \
-                    or ((p[1] in slotGames or p[1] in slotPractices) and (p[0] not in slotGames or p[0] not in slotPractices)):
+                if ((p[0] in slotGames or p[0] in slotPractices) and (p[1] not in slotGames and p[1] not in slotPractices)) \
+                    or ((p[1] in slotGames or p[1] in slotPractices) and (p[0] not in slotGames and p[0] not in slotPractices)):
                     penalty += penNotPaired
                     pairCopy.remove(p)
     return penalty

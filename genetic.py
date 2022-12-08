@@ -51,7 +51,7 @@ def findTimeslot(sch, gameprac):
 def fWert():
 
     # first 5 are randomly generated
-    if len(state) < 5:
+    if len(state) < 10:
         return 0
 
     elif len(state) < 50:
@@ -257,7 +257,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     random.seed()
     sortState()
     
-    for i in range(100):
+    for i in range(200):
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)
