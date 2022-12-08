@@ -15,12 +15,28 @@ class RepairNode:
         self.depth = 0
         # sol-entry [? = 0, yes = 1, no = 2]
         self.solEntry = 0
+        self.currGamePrac = ""
+        self.isGame = False
+
+    def getCurrGamePrac(self):
+        return self.currGamePrac
+
+    def setCurrGamePrac(self, currGamePrac):
+        self.currGamePrac = currGamePrac
+        
+    def getIsGame(self):
+        return self.isGame
+
+    def setIsGame(self, isGame):
+        self.isGame = isGame
+        
 
     def newNode(self):
         return copy.copy(self)
     
     def getID(self):
         return self._id
+
     
     def printNodeContent(self):
         print('Node at depth ', self.depth)

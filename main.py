@@ -242,7 +242,7 @@ s1 = sched.newSchedule() #calling newSchedule() on the template schedule created
 #format: addGame(day of the week, timeslot index, name of game)
 #		 addPractice(day of the week, timeslot index, name of practice)
 for game in gamesList:
-    for day in range(schedule.numDays):
+    for day in range(sthedule.numDays):
         for time in range(schedule.numTimeslots):
             if ((day, time) in validGameSlots):
                 #if the time slot is in the list of valid ones, we can use it, check if (day, time) in validGameSlots

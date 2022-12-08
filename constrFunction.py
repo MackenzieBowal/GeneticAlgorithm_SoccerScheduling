@@ -16,7 +16,15 @@ def initiateConstr(gl, pl, vgs, vps, nc, unw, pref, pr, pa):
     pair = pr
     partAssign = pa
 
-def oneBigConstr(sch, isGame, time, day):
+
+def findTimeslot(sch, gameprac):
+    for assign in sch.getAssignment():
+        if assign[0] == gameprac:
+            return assign[1], assign[2]
+            break
+    return -1, -1
+
+def oneBigConstr(sch, isGame, currGameOrPrac):
     """
     for i in range(len(days)):
         for j in range(len(times)):
@@ -95,6 +103,7 @@ def oneBigConstr(sch, isGame, time, day):
                 """
 
     #if(isGame):
+    day, time = findTimeslot(sch, currGameOrPrac)
     slot = sch.getSchedule()[day][time]
     slotGames = slot.getGames()
     slotPracs = slot.getPractices()
@@ -114,7 +123,7 @@ def oneBigConstr(sch, isGame, time, day):
                 return False
 
     # hc6
-    if j < 20:
+    if time < 20:
         for game in slotGames:
             if ("DIV 9" in game):
                 return False
@@ -170,8 +179,9 @@ def oneBigConstr(sch, isGame, time, day):
 
 
 # THIS IS A SUPER BASIC IMPLEMENTATION OF CONSTR() TO TEST REPAIR TREE - THIS STILL NEEDS TO BE PROPERLY IMPLEMENTED BASED ON pg. 2 OF REPORT 
-def constr(sch, time, day):
+def constr(sch, currGameOrPrac, isGame):
 
+<<<<<<< HEAD
     #hc1 = check_hc1(sch)
     #hc2 = check_hc2(sch)
     #hc3 = check_hc3(sch)
@@ -186,4 +196,7 @@ def constr(sch, time, day):
 
     return hc4 and hc5 and hc6 and hc7 and hc8 and hc9 and hc10
     '''
+    return oneBigConstr(sch, currGameOrPrac, isGame)
+=======
     return oneBigConstr(sch, time, day)
+>>>>>>> 518e399bc741db143f2efba16d56810890eb32ce

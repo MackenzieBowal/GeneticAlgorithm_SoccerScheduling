@@ -11,6 +11,7 @@ import sys
 import constrFunction
 
 
+
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
 #Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
 #Purpose: takes in a reference schedule and repairs it to make it valid. This function can also be used to generate valid schedules to fill the population at the beginning.
@@ -55,10 +56,12 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         #print("Reached fleaf")
 
         currentGameorPrac = ""
+        isGame = False
         #Find the current game/practice in discussion 
         if (len(currentNode.getGamesLeft())>0):
             gamesAvailable = currentNode.getGamesLeft()
             currentGameorPrac = gamesAvailable[0]
+            isGame = True
 
         elif (len(currentNode.getPracLeft())>0):
             pracAvailable = currentNode.getPracLeft()
@@ -66,6 +69,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
         # Add expanded nodes to Priority Queue 
         for item in listPossibleExpansions:
+            item.setCurrGamePrac(currentGameorPrac)
+            item.setIsGame(isGame)
             #if you want to generate a valid schedule without a reference, the useInspiration flag should be False
             if (useInspiration and follows(inspirationSchedule, item, currentGameorPrac)):
                 # Priority queue pulls items with lowest number as most prioritized from the top, so we subtract 1 for higher priority 
@@ -216,7 +221,7 @@ def follows(inspirationSchedule, currentNode, currentGameorPrac):
 #Outputs: Integer - (1) it's a complete, valid solution (2) some hard constraints violated (3) incomplete schedule that is valid so far
 #Purpose: Supports expansion method in OR Tree 
 def ftrans(checkNode):
-    passesHardConstraints = constrFunction.constr(checkNode.getSchedule())
+    passesHardConstraints = constrFunction.constr(checkNode.getSchedule(), checkNode.getCurrGamePrac(), checkNode.getIsGame())
     # We don't need to explicitly change the sol-entry because if it is no, the node is discarded because it was already pulled from fringe 
     # If the sol-entry should be yes, we return this schedule in repairSchedule() anyways 
     # The default sol-entry in a node is ? so we don't need to change if the node is passed to altern 
