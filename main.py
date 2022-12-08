@@ -143,10 +143,10 @@ def parse(file):
                 day = components[1].strip()
                 time = components[2].strip()
                 if ("PRC" in game) or ("OPN" in game):
-                    sched.addPractice(days[day], times[time], game)
+                    sched.addPractice(days[day], times[time], game, validPracSlots)
                     pracList.remove(game)
                 else:
-                    sched.addGame(days[day], times[time], game)
+                    sched.addGame(days[day], times[time], game, validGameSlots)
                     gamesList.remove(game)
                 partassign.append(tuple([game, day, time]))
     return sched
@@ -205,7 +205,8 @@ if (specialPracsExist):
                 divNum = components[len(components)-1].strip()
                 for game in gamesList:
                     if ("CMSA U12T1" in game and (divNum in game or len(components) < 6)):
-                        worked = sched.addPractice(days['TU'], times['18:00'], prac)
+                        print("assigning CMSA U12T1S")
+                        worked = sched.addPractice(days['TU'], times['18:00'], prac, validPracSlots)
                         pracList.remove(prac)
                         if (not worked):
                             sys.exit("\nCould not allocate CMSA U12T1S to a valid practice slot\n")
@@ -216,7 +217,7 @@ if (specialPracsExist):
                 divNum = components[len(components)-1].strip()
                 for game in gamesList:
                     if ("CMSA U13T1" in game and (divNum in game or len(components) < 6)):
-                        worked = sched.addPractice(days['TU'], times['18:00'], prac)
+                        worked = sched.addPractice(days['TU'], times['18:00'], prac, validPracSlots)
                         pracList.remove(prac)
                         if (not worked):
                             sys.exit("\nCould not allocate CMSA U13T1S to a valid practice slot\n")

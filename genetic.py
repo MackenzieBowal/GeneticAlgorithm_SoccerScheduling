@@ -95,20 +95,20 @@ def fSelect(fWertScore):
         for game in gamesList:
             slotNum = random.randint(0, len(validGameSlots)-1)
             slot = validGameSlots[slotNum]
-            worked = newSch.addGame(int(slot[0]), int(slot[1]), game)
+            worked = newSch.addGame(int(slot[0]), int(slot[1]), game, validGameSlots)
             while (not worked):
                 slotNum = random.randint(0, len(validGameSlots)-1)
                 slot = validGameSlots[slotNum]
-                worked = newSch.addGame(int(slot[0]), int(slot[1]), game)
+                worked = newSch.addGame(int(slot[0]), int(slot[1]), game, validGameSlots)
 
         for prac in pracList:
             slotNum = random.randint(0, len(validPracSlots)-1)
             slot = validPracSlots[slotNum]
-            worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac)
+            worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac, validPracSlots)
             while (not worked):
                 slotNum = random.randint(0, len(validPracSlots)-1)
                 slot = validPracSlots[slotNum]
-                worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac)
+                worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac, validPracSlots)
 
         randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
         state.append((randSchedule, evalFunction.eval(randSchedule)))
@@ -151,7 +151,7 @@ def fSelect(fWertScore):
                 while worked == False:
                     slot = random.randint(0, len(validGameSlots)-1)
                     day, time = validGameSlots[slot]
-                    worked = mutant.addGame(day, time, game)
+                    worked = mutant.addGame(day, time, game, validGameSlots)
 
             # randomize 10% of the practices
             for i in range(numPracs):
@@ -165,7 +165,7 @@ def fSelect(fWertScore):
                 while worked == False:
                     slot = random.randint(0, len(validPracSlots)-1)
                     day, time = validPracSlots[slot]
-                    worked = mutant.addPractice(day, time, prac)
+                    worked = mutant.addPractice(day, time, prac, validPracSlots)
 
             # for the rest of the games, follow parent
             for game in uGames:
@@ -173,7 +173,7 @@ def fSelect(fWertScore):
                 print("following parent for game "+game)
                 day, time = findTimeslot(indA[0], game)
                 if (day != -1 and time != -1):
-                    mutant.addGame(day, time, game)
+                    mutant.addGame(day, time, game, validGameSlots)
                 else:
                     sys.exit("Parent had no game assigned")
 
@@ -183,7 +183,7 @@ def fSelect(fWertScore):
                 print("following parent for prac "+prac)
                 day, time = findTimeslot(indA[0], prac)
                 if (day != -1 and time != -1):
-                    mutant.addPractice(day, time, prac)
+                    mutant.addPractice(day, time, prac, validPracSlots)
                 else:
                     sys.exit("Parent had no practice assigned")
             
@@ -207,29 +207,24 @@ def fSelect(fWertScore):
 
             for i in range(len(unassignedGames)):
                 game = unassignedGames[i]
-                print("assigning game "+game)
                 # even games are indA
                 if i % 2 == 0:
-                    print("even game")
                     day, time = findTimeslot(indA[0], game)
-                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
-                        child.addGame(day, time, game)
+                        child.addGame(day, time, game, validGameSlots)
                     else:
                         day, time = findTimeslot(indB[0], game)
-                        child.addGame(day, time, game)
+                        child.addGame(day, time, game, validGameSlots)
                         if (day != -1 and time != -1):
                             return
                 # odd games are indB
                 elif i % 2 == 1:
-                    print("odd game")
                     day, time = findTimeslot(indB[0], game)
-                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
-                        child.addGame(day, time, game)
+                        child.addGame(day, time, game, validGameSlots)
                     else:
                         day, time = findTimeslot(indA[0], game)
-                        child.addGame(day, time, game)
+                        child.addGame(day, time, game, validGameSlots)
                         if (day != -1 and time != -1):
                             return
             
@@ -239,21 +234,20 @@ def fSelect(fWertScore):
                 if i % 2 == 0:
                     day, time = findTimeslot(indA[0], prac)
                     if (day != -1 and time != -1):
-                        child.addPractice(day, time, prac)
+                        child.addPractice(day, time, prac, validPracSlots)
                     else:
                         day, time = findTimeslot(indB[0], prac)
-                        child.addPractice(day, time, prac)
+                        child.addPractice(day, time, prac, validPracSlots)
                         if (day != -1 and time != -1):
                             return
                 # odd pracs are indB
                 elif i % 2 == 1:
                     day, time = findTimeslot(indB[0], prac)
-                    child.addPractice(day, time, prac)
                     if (day != -1 and time != -1):
-                        child.addPractice(day, time, prac)
+                        child.addPractice(day, time, prac, validPracSlots)
                     else:
                         day, time = findTimeslot(indA[0], prac)
-                        child.addPractice(day, time, prac)
+                        child.addPractice(day, time, prac, validPracSlots)
                         if (day != -1 and time != -1):
                             return
             newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)

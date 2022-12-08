@@ -2,6 +2,7 @@
 #Contains the schedule data structure
 
 import copy
+import sys
 from constants import *
 
 numDays = 5
@@ -121,7 +122,10 @@ class Schedule:
     def getSchedule(self):
         return self.schedule
 
-    def addGame(self, day, time, g):
+    def addGame(self, day, time, g, vgs):
+        validGameSlots = vgs
+        if (day, time) not in validGameSlots:
+            sys.exit("Cannot schedule game "+g+" at day "+str(day)+", time "+str(time))
         add = True
         if day == days['MO']:
             for i in range(0,2): # games on M,W,F are an hour long
@@ -154,8 +158,10 @@ class Schedule:
                 return True
         return False
 
-    def addPractice(self, day, time, p):        
-
+    def addPractice(self, day, time, p, vps):        
+        validPracSlots = vps
+        if (day, time) not in validPracSlots:
+            sys.exit("Cannot schedule practice "+p+" at day "+str(day)+", time "+str(time))
         add = True
         if day == days['MO']:
             for i in range(0,2): #practices on M,W are an hour long
