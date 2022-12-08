@@ -14,7 +14,7 @@ import constrFunction
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
 #Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
 #Purpose: takes in a reference schedule and repairs it to make it valid. This function can also be used to generate valid schedules to fill the population at the beginning.
-def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac):
+def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac, iteration):
     #Create root node 
     rootNode = node.RepairNode()
     rootNode.setSchedule(templateSchedule)
@@ -26,6 +26,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     counter = 0
     fringe =  PriorityQueue()
 
+    
     while (continueExpandingTree):
         #Define and call Altern
 
@@ -63,6 +64,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             pracAvailable = currentNode.getPracLeft()
             currentGameorPrac = pracAvailable[0]
 
+
+        c = 1
         # Add expanded nodes to Priority Queue 
         for item in listPossibleExpansions:
             #if you want to generate a valid schedule without a reference, the useInspiration flag should be False
@@ -71,8 +74,12 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
                 # (Note - this is not consistent with Proposal description)
                 # We add the nodeID as argument because we need to break ties for priorities in the queue (Python syntax)
                 fringe.put(((item.getDepth()*2)-1, item.getID(), item))
-            else:
+            elif (c == iteration):
                 fringe.put(((item.getDepth()*2), item.getID(), item))
+                c+=1
+            else:
+                fringe.put(((item.getDepth()*2+c), item.getID(), item))
+                c+=1
 
         #Loop is useful to come back to pre-populated fringe when the node selected has an invalid schedule 
         while(True): 
@@ -81,7 +88,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             #if all fringe schedules have been checked, then there is no valid schedule that can be produced
             if (fringe.empty()==True):
-                sys.exit("A valid schedule cannot be produced.")
+                #sys.exit("A valid schedule cannot be produced.")
+                return None
 
             checkTuple = fringe.get()
             checkNode = checkTuple[2]

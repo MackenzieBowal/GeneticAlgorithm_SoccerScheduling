@@ -118,9 +118,12 @@ def fSelect(fWertScore):
                 worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac)
 
         print("repairing")
-        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
+        counter = 0
+        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
         while (randSchedule == None):
-            randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
+            counter +=1
+            print("retrying")
+            randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
         print("done repairing")
         state.append((randSchedule, evalFunction.eval(randSchedule)))
         print("randomized eval: "+str(state[len(state)-1][1]))
@@ -198,7 +201,12 @@ def fSelect(fWertScore):
                     sys.exit("Parent had no practice assigned")
             
             print("repairing")
-            newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList)
+            counter = 0
+            newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
+            while (newIndividual == None):
+                counter +=1
+                print("retrying")
+                newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
             print("done repairing")
             state.append((newIndividual, evalFunction.eval(newIndividual)))
             print("mutated eval: "+str(state[len(state)-1][1]))
@@ -264,7 +272,12 @@ def fSelect(fWertScore):
                         if (day != -1 and time != -1):
                             return
             print("repairing")
-            newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)
+            counter = 0
+            newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
+            while (newIndividual == None):
+                counter +=1
+                print("retrying")
+                newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
             print("done repairing")
             state.append((newIndividual, evalFunction.eval(newIndividual)))
             print("crossovered eval: "+str(state[len(state)-1][1]))
