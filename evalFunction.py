@@ -21,6 +21,7 @@ def initiateEval(wmf, wpf, wpr, wsd, pgm, ppm, pref, pnp, ps, pr):
 
 
 def eval(assign):
+    print("EVAL: "+str(evalMinFilled(assign)*wMinFilled)+" + " + str(evalPref(assign)*wPref)+" + "+str(evalPair(assign)*wPair)+" + " + str(evalSecDiff(assign)*wSecDiff))
     return evalMinFilled(assign)*wMinFilled + evalPref(assign)*wPref + \
     evalPair(assign)*wPair + evalSecDiff(assign)*wSecDiff
 

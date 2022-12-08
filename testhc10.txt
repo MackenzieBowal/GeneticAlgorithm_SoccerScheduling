@@ -3,6 +3,7 @@ Evening division violation test
  
 Game slots: 
 MO, 8:00, 3, 0
+MO, 18:00, 3, 0
  
 Games: 
 CSMA U17T1 DIV 91
