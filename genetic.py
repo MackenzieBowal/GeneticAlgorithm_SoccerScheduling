@@ -32,6 +32,7 @@ def sortState():
 # rouletteSelect()
 # takes a list of individuals and returns the one selected by a roulette function
 def rouletteSelect(stateList):
+    '''
     totalEval = 0
     for i in range(len(stateList)):
         totalEval += stateList[i][1]
@@ -52,8 +53,14 @@ def rouletteSelect(stateList):
         num -= fitnesses[index]
         index += 1
     index -= 1
+    '''
 
-    return stateList[index]
+    index = random.randint(1, 4)
+    sorted(stateList, key=lambda s : s[1])
+    print("\nstateList:")
+    print(str(stateList))
+    print("\n")
+    return stateList[len(stateList)-index]
 
 # find which timeslot a schedule contains a game or practice
 def findTimeslot(sch, gameprac):
@@ -71,7 +78,7 @@ def fWert():
     if len(state) < 5:
         return 0
 
-    elif len(state) < 50:
+    elif len(state) < 25:
         return 1
 
     else:
@@ -110,7 +117,11 @@ def fSelect(fWertScore):
                 slot = validPracSlots[slotNum]
                 worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac)
 
+        print("repairing")
         randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
+        while (randSchedule == None):
+            randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
+        print("done repairing")
         state.append((randSchedule, evalFunction.eval(randSchedule)))
         print("randomized eval: "+str(state[len(state)-1][1]))
 
@@ -131,6 +142,7 @@ def fSelect(fWertScore):
             # mutation
             sortState()
             indA = rouletteSelect(state)
+            print("indA: "+str(indA))
             mutant = sched.newSchedule()
 
             uGames = copy.copy(unassignedGames)
@@ -145,7 +157,6 @@ def fSelect(fWertScore):
                 randIndex = random.randint(0, len(uGames)-1)
                 game = uGames[randIndex]
                 uGames.remove(game)
-                print("randomizing game "+game)
                 worked = False
                 # Try adding the game -> if it can't be added to the random slot, try again
                 while worked == False:
@@ -159,7 +170,6 @@ def fSelect(fWertScore):
                 randIndex = random.randint(0, len(uPracs)-1)
                 prac = uPracs[randIndex]
                 uPracs.remove(prac)
-                print("randomizing prac "+prac)
                 worked = False
                 # Try adding the practice -> if it can't be added to the random slot, try again
                 while worked == False:
@@ -170,7 +180,7 @@ def fSelect(fWertScore):
             # for the rest of the games, follow parent
             for game in uGames:
                 # follow parent schedule
-                print("following parent for game "+game)
+                #print("following parent for game "+game)
                 day, time = findTimeslot(indA[0], game)
                 if (day != -1 and time != -1):
                     mutant.addGame(day, time, game)
@@ -180,14 +190,16 @@ def fSelect(fWertScore):
             # for the rest of the practices, follow parent
             for prac in uPracs:
                 # follow parent schedule
-                print("following parent for prac "+prac)
+                #print("following parent for prac "+prac)
                 day, time = findTimeslot(indA[0], prac)
                 if (day != -1 and time != -1):
                     mutant.addPractice(day, time, prac)
                 else:
                     sys.exit("Parent had no practice assigned")
             
+            print("repairing")
             newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList)
+            print("done repairing")
             state.append((newIndividual, evalFunction.eval(newIndividual)))
             print("mutated eval: "+str(state[len(state)-1][1]))
 
@@ -197,9 +209,9 @@ def fSelect(fWertScore):
             sortState()
             indA = rouletteSelect(state)
             print("indA: "+str(indA))
-            sortState()
             temp = copy.copy(state)
             temp.remove(indA)
+            sortState()
             indB = rouletteSelect(temp)
             print("indB: "+str(indB))
 
@@ -207,12 +219,9 @@ def fSelect(fWertScore):
 
             for i in range(len(unassignedGames)):
                 game = unassignedGames[i]
-                print("assigning game "+game)
                 # even games are indA
                 if i % 2 == 0:
-                    print("even game")
                     day, time = findTimeslot(indA[0], game)
-                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
                         child.addGame(day, time, game)
                     else:
@@ -222,9 +231,7 @@ def fSelect(fWertScore):
                             return
                 # odd games are indB
                 elif i % 2 == 1:
-                    print("odd game")
                     day, time = findTimeslot(indB[0], game)
-                    print("adding to timeslot "+str(day)+", "+str(time))
                     if (day != -1 and time != -1):
                         child.addGame(day, time, game)
                     else:
@@ -256,12 +263,15 @@ def fSelect(fWertScore):
                         child.addPractice(day, time, prac)
                         if (day != -1 and time != -1):
                             return
+            print("repairing")
             newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)
+            print("done repairing")
             state.append((newIndividual, evalFunction.eval(newIndividual)))
             print("crossovered eval: "+str(state[len(state)-1][1]))
 
     # delete bottom 5 
     elif fWertScore == 2:
+        print("deleting 5")
         sortState()
         state = state[5:]
 
@@ -313,7 +323,13 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     random.seed()
     sortState()
     
-    for i in range(10):
+    for i in range(100):
+
+        print("\nSTATE: ")
+        for ind in state:
+            print(ind)
+        print("\n\n")
+
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)

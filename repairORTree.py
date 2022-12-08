@@ -42,15 +42,14 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         #Discuss edge case of there being no schedule to return with team, for now I am returning Python's version of Null
         #What behaviour should be exhibited for inputs that cannot create a valid schedule?
 
-        '''
-        If altern returns an empty list, that doesn't mean a valid schedule can't be produced. It just means
-        we need to try a different branch. It's only if the fringe is empty that a schedule can't be produced.
+        
+        #If altern returns an empty list, that doesn't mean a valid schedule can't be produced. It just means
+        #we need to try a different branch. It's only if the fringe is empty that a schedule can't be produced.
 
         if (listPossibleExpansions == []):
             #sys.exit("A valid schedule can not be produced.")
             return None
-        '''
-
+        
         #Define fleaf - no separate function, it's just defined inside repairSchedule()
         #print("Reached fleaf")
 
