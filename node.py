@@ -23,14 +23,13 @@ class RepairNode:
 
     def setCurrGamePrac(self, currGamePrac):
         self.currGamePrac = currGamePrac
-        
+    
     def getIsGame(self):
         return self.isGame
 
     def setIsGame(self, isGame):
         self.isGame = isGame
         
-
     def newNode(self):
         return copy.deepcopy(self)
     
