@@ -29,10 +29,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     while (continueExpandingTree):
         #Define and call Altern
 
-        if counter == 10:
-            break
-
-        print("Running Altern round: ", counter)
+        #print("Running Altern round: ", counter)
         counter += 1
         #currentNode.getSchedule().printSchedule()
 
@@ -55,7 +52,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         '''
 
         #Define fleaf - no separate function, it's just defined inside repairSchedule()
-        print("Reached fleaf")
+        #print("Reached fleaf")
 
         currentGameorPrac = ""
         #Find the current game/practice in discussion 
@@ -90,12 +87,13 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
 
-            print("Reached ftrans")
+            #print("Reached ftrans")
             #Get Node from fleaf and Pass to ftrans
             output = ftrans(checkNode)
 
             #Used for debugging
-            print("the ftrans output is ", output)
+            #print("the ftrans output is ", output)
+            #print("fringe size is "+str(fringe.qsize()))
 
             if (output == 1):
                 #the schedule is complete and meets all hard constraints - DONE
@@ -129,7 +127,6 @@ def altern(currentNode, listValidGameSlots, listValidPracSlots):
             #print(success)
 
             if success:
-                print(myGamesLeft[0]+" added to day "+str(day)+" time "+str(time))
                 myGamesLeft.remove(myGamesLeft[0])
                 copyNode = currentNode.newNode()
                 copyNode.setSchedule(copySchedule)
@@ -219,16 +216,7 @@ def follows(inspirationSchedule, currentNode, currentGameorPrac):
 #Outputs: Integer - (1) it's a complete, valid solution (2) some hard constraints violated (3) incomplete schedule that is valid so far
 #Purpose: Supports expansion method in OR Tree 
 def ftrans(checkNode):
-    gamesLeft = copy.copy(checkNode.getGamesLeft())
-    pracLeft = copy.copy(checkNode.getPracLeft())
-    passesHardConstraints = False
-    if (len(gamesLeft) > 0):
-        passesHardConstraints = constrFunction.constr(checkNode.getSchedule(), True, gamesLeft, pracLeft)
-    elif ((len(gamesLeft) == 0) and (len(pracLeft) > 0)):
-        passesHardConstraints = constrFunction.constr(checkNode.getSchedule(), True, gamesLeft, pracLeft)
-    else:
-        passesHardConstraints = constrFunction.constr(checkNode.getSchedule(), False, [], [])
-
+    passesHardConstraints = constrFunction.constr(checkNode.getSchedule())
     # We don't need to explicitly change the sol-entry because if it is no, the node is discarded because it was already pulled from fringe 
     # If the sol-entry should be yes, we return this schedule in repairSchedule() anyways 
     # The default sol-entry in a node is ? so we don't need to change if the node is passed to altern 

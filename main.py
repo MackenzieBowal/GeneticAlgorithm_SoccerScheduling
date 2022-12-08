@@ -73,6 +73,8 @@ def parse(file):
                 day = days[components[0]]
                 time = times[components[1]]
                 gameMax = int(components[2])
+                global numGameSpaces
+                numGameSpaces += gameMax
                 gameMin = int(components[3])
                 sched.setGamemax(day, time, gameMax)
                 sched.setGamemin(day, time, gameMin)
@@ -84,12 +86,16 @@ def parse(file):
                 day = days[components[0]]
                 time = times[components[1]]
                 pracMax = int(components[2])
+                global numPracSpaces
+                numPracSpaces += pracMax
                 pracMin = int(components[3])
                 sched.setPracticemax(day, time, pracMax)
                 sched.setPracticemin(day, time, pracMin)
                 validPracSlots.append((day, time))
             
             elif category == "G":
+                global numGamesTotal
+                numGamesTotal+=1
                 if ("CMSA U12T1" in line or "CMSA U13T1" in line):
                     global specialGamesExist
                     specialGamesExist = True
@@ -97,6 +103,8 @@ def parse(file):
                 gamesList.append(line)
             
             elif category == "P":
+                global numPracsTotal
+                numPracsTotal+=1
                 if ("CMSA U12T1S" in line or "CMSA U13T1S" in line):
                     global specialPracsExist
                     specialPracsExist = True
@@ -169,13 +177,23 @@ partassign = []
 specialGamesExist = False
 specialPracsExist = False
 specialGamesList = []
+numGamesTotal = 0
+numPracsTotal = 0
+numGameSpaces = 0
+numPracSpaces = 0
+
 
 # read the input text file from the command line
 try: file = sys.argv[1]
 except: sys.exit("Must provide a program description in a text file.")
 
 sched = parse(file)
-sched.printSchedule()
+
+#Check for input validity
+if (numGamesTotal > numGameSpaces):
+    sys.exit("Too many games for the number of slots")
+if (numPracsTotal > numPracSpaces):
+    sys.exit("Too many practices for the number of slots")
 
 # Automatically assign hard constraint practices
 if (specialPracsExist):
@@ -203,13 +221,9 @@ if (specialPracsExist):
                         if (not worked):
                             sys.exit("\nCould not allocate CMSA U13T1S to a valid practice slot\n")
 
-print("new shced:")
-sched.printSchedule()
-
 
 
 print("sched:")
-sched.print()
 print("Games:", gamesList)
 print("Practices:", pracList)
 print("Not compatible:", notCompatible)
