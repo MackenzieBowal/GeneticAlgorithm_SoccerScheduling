@@ -9,7 +9,8 @@ class RepairNode:
 
     def __init__(self):
         self._id = id(self)
-        self.mySched = schedule.Schedule()
+        #self.mySched = schedule.Schedule()
+        self.assignmentList = []
         self.gamesLeft = []
         self.pracLeft = []
         self.depth = 0
@@ -20,6 +21,12 @@ class RepairNode:
 
     def getCurrGamePrac(self):
         return self.currGamePrac
+    
+    def getAssignmentList(self):
+        return self.assignmentList
+
+    def copyAssignmentList(self):
+        return copy.deepcopy(self.assignmentList)
 
     def setCurrGamePrac(self, currGamePrac):
         self.currGamePrac = currGamePrac
@@ -49,14 +56,8 @@ class RepairNode:
         print(self.mySched.print())
         print('\n')
 
-    def getSchedule(self):
-        return self.mySched
-
     def setUniqueID(self):
         self._id = id(self)
-
-    def setSchedule(self, newSchedule):
-        self.mySched = copy.copy(newSchedule)
 
     def setGamesLeft(self, newGamesLeft):
         self.gamesLeft = newGamesLeft
