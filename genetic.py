@@ -93,7 +93,6 @@ def fSelect(fWertScore):
         print("randomized eval: "+str(state[len(state)-1][1]))
 
 
-
     # mutation/crossover
     elif fWertScore == 1:
         # 40% chance of mutation, 60% chance of crossover
