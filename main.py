@@ -3,11 +3,12 @@
 import sys
 import copy
 import schedule
-import node
-from repairORTree import*
+#import node
+#from repairORTree import *
 from constants import *
 from genetic import runGeneticAlgorithm
 import evalFunction
+import constrFunction
 
 #Sample Cmd Line
 #python main.py test.txt 1 0 1 0 10 10 10 10

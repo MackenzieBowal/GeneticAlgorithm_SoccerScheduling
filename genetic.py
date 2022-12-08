@@ -5,7 +5,7 @@ import sys
 import copy
 import schedule
 import node
-from repairORTree import *
+from repairORTree import startRepairing
 import constants
 import evalFunction
 import random
@@ -75,7 +75,6 @@ def fWert():
 # performs random generation, mutation/crossover, or deletion
 def fSelect(fWertScore):
     global state
-
     # random generation
     if fWertScore == 0:
 
@@ -98,9 +97,11 @@ def fSelect(fWertScore):
                 slot = validPracSlots[slotNum]
                 worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac, validPracSlots)
 
-        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
+        randSchedule = startRepairing(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
         state.append((randSchedule, evalFunction.eval(randSchedule)))
+        randSchedule.printSchedule()
         print("randomized eval: "+str(state[len(state)-1][1]))
+        sys.exit("finished one")
 
 
 

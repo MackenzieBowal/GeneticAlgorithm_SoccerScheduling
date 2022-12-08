@@ -9,50 +9,70 @@ import node
 from queue import PriorityQueue
 import sys
 import constrFunction
+import threading
 
+def startRepairing(ts, insp, ui, vgs, vps, lag, lap):
+    
+    global totalThreadList
+    global foundSolution
+    global solutionNode
+    global templateSchedule
+    global inspirationSchedule
+    global useInspiration
+    global listValidGameSlots
+    global listValidPracSlots
+    global listAllGames
+    global listAllPrac
 
-#Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
-#Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
-#Purpose: takes in a reference schedule and repairs it to make it valid. This function can also be used to generate valid schedules to fill the population at the beginning.
-def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac):
-    #Create root node 
+    templateSchedule = ts
+    inspirationSchedule = insp
+    useInspiration = ui
+    listValidGameSlots = vgs
+    listValidPracSlots = vps
+    listAllGames = lag
+    listAllPrac = lap
+    foundSolution = False
+    totalThreadList = []
+
+    # expand the root node once
     rootNode = node.RepairNode()
     rootNode.setSchedule(templateSchedule)
     rootNode.setGamesLeft(listAllGames)
     rootNode.setPracLeft(listAllPrac)
-    continueExpandingTree = True
-    currentNode = rootNode
+
+    listFirstExpansions = altern(rootNode, listValidGameSlots, listValidPracSlots)
+
+    # create a thread for each first expansion
+    for node in listFirstExpansions:
+        t = threading.Thread(target=repairSchedule, args=(node,))
+        totalThreadList.append(t)
+        t.start()
+
+    for thread in totalThreadList:
+        thread.join()
+
+    if not foundSolution:
+        sys.exit("A valid schedule cannot be found")
+    
+    return solutionNode.getSchedule()
+
+#Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
+#Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
+#Purpose: takes in a reference schedule and repairs it to make it valid. This function can also be used to generate valid schedules to fill the population at the beginning.
+def repairSchedule(myNode):
+
+    print("next thread!")
+
+    currentNode = myNode
+    global foundSolution
 
     counter = 0
-    fringe =  PriorityQueue()
+    fringe = PriorityQueue()
 
-    while (continueExpandingTree):
-        #Define and call Altern
+    while (not foundSolution):
 
-        #print("Running Altern round: ", counter)
         counter += 1
-        #currentNode.getSchedule().printSchedule()
-
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
-        
-        #Uncomment this for debugging 
-        #print("List from altern")
-        #printAlternGeneration(listPossibleExpansions)
-
-        #Discuss edge case of there being no schedule to return with team, for now I am returning Python's version of Null
-        #What behaviour should be exhibited for inputs that cannot create a valid schedule?
-
-        '''
-        If altern returns an empty list, that doesn't mean a valid schedule can't be produced. It just means
-        we need to try a different branch. It's only if the fringe is empty that a schedule can't be produced.
-
-        if (listPossibleExpansions == []):
-            #sys.exit("A valid schedule can not be produced.")
-            return None
-        '''
-
-        #Define fleaf - no separate function, it's just defined inside repairSchedule()
-        #print("Reached fleaf")
 
         currentGameorPrac = ""
         #Find the current game/practice in discussion 
@@ -82,7 +102,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             #if all fringe schedules have been checked, then there is no valid schedule that can be produced
             if (fringe.empty()==True):
-                sys.exit("A valid schedule cannot be produced.")
+                return
 
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
@@ -97,7 +117,10 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             if (output == 1):
                 #the schedule is complete and meets all hard constraints - DONE
-                return checkNode.getSchedule()
+                global solutionNode
+                solutionNode = copy.copy(checkNode.getSchedule())
+                foundSolution = True
+                return
             elif (output == 2):
                 #the schedule is invalid and we need a new node from the fringe
                 continue
