@@ -46,7 +46,6 @@ def rouletteSelect(stateList):
     print("\n")
     return stateList[len(stateList)-index]
 
-    
 # find which timeslot a schedule contains a game or practice
 def findTimeslot(sch, gameprac):
     for assign in sch.getAssignment():
