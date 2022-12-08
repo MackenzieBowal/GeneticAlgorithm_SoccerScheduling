@@ -101,10 +101,11 @@ def fSelect(fWertScore):
         '''
 
         newSch = sched.newSchedule()
-        #newSch.addPractice('CMSA U8T1 DIV 01 PRC 02', 1, 18)
-        
+        #newSch.addGame(0, 18, 'CMSA U8T1 DIV 93')
+        #newSch.addPractice(0, 2, 'CMSA U12T1 DIV 91 PRC 02')
 
-        passed = constrFunction.check_hc2(newSch)
+        newSch.printSchedule()
+        passed = constrFunction.check_hc10(newSch)
 
         if passed:
             print("passed constr")
