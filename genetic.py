@@ -15,13 +15,6 @@ import constrFunction
 # state contains two objects for each individual: the schedule and its eval-score
 state = []
 
-'''
-to do:
-start state DONE
-define fwert DONE
-define fselect ALMOST DONE
-'''
-
 
 # sortState()
 # sort all the individuals in order of their eval-score
@@ -86,11 +79,6 @@ def fSelect(fWertScore):
     # random generation
     if fWertScore == 0:
 
-        ''' debugging
-        newSch = sched.newSchedule()
-        newSch.addGame(0, 1, 'CMSA U12T1 DIV 01')
-        newSch.addGame(0, 1, 'CMSA U12T1 DIV 02')
-        '''
         newSch = sched.newSchedule()
         for game in gamesList:
             slotNum = random.randint(0, len(validGameSlots)-1)
@@ -113,13 +101,6 @@ def fSelect(fWertScore):
         randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
         state.append((randSchedule, evalFunction.eval(randSchedule)))
         print("randomized eval: "+str(state[len(state)-1][1]))
-
-
-        '''
-        randSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList)
-        state.append((randSchedule, evalFunction.eval(randSchedule)))
-        print("randomized eval: "+str(state[0][1]))
-        '''
 
 
 
@@ -145,7 +126,6 @@ def fSelect(fWertScore):
                 randIndex = random.randint(0, len(uGames)-1)
                 game = uGames[randIndex]
                 uGames.remove(game)
-                print("randomizing game "+game)
                 worked = False
                 # Try adding the game -> if it can't be added to the random slot, try again
                 while worked == False:
@@ -159,7 +139,6 @@ def fSelect(fWertScore):
                 randIndex = random.randint(0, len(uPracs)-1)
                 prac = uPracs[randIndex]
                 uPracs.remove(prac)
-                print("randomizing prac "+prac)
                 worked = False
                 # Try adding the practice -> if it can't be added to the random slot, try again
                 while worked == False:
@@ -170,7 +149,6 @@ def fSelect(fWertScore):
             # for the rest of the games, follow parent
             for game in uGames:
                 # follow parent schedule
-                print("following parent for game "+game)
                 day, time = findTimeslot(indA[0], game)
                 if (day != -1 and time != -1):
                     mutant.addGame(day, time, game, validGameSlots)
@@ -180,7 +158,6 @@ def fSelect(fWertScore):
             # for the rest of the practices, follow parent
             for prac in uPracs:
                 # follow parent schedule
-                print("following parent for prac "+prac)
                 day, time = findTimeslot(indA[0], prac)
                 if (day != -1 and time != -1):
                     mutant.addPractice(day, time, prac, validPracSlots)
@@ -282,46 +259,21 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     global unassignedPracs
     unassignedGames = copy.copy(gamesList)
     unassignedPracs = copy.copy(pracList)
-    '''
-    for gp in partAssign:
-        if ("PRC" in gp[0] or "OPN" in gp[0]):
-            unassignedPracs.remove(gp[0])
-        else:
-            print(unassignedGames)
-            unassignedGames.remove(gp[0])
-    '''
 
     # start with an empty state, declared at the top of the file
 
-    '''
-    state.append(('five', 5))
-    state.append(('too', 2))
-    state.append(('ate', 8))
-    state.append(('nine', 9))
-    state.append(('six', 6))
-    state.append(('won', 1))
-    state.append(('fore', 4))
-    state.append(('two', 2))
-    state.append(('three', 3))
-    '''
     random.seed()
     sortState()
     
-    for i in range(10):
+    for i in range(100):
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)
     
     sortState()
     print("Final eval: "+str(state[len(state)-1][1]))
+
     '''
-    sortState()
-
-    for i in range(len(state)):
-        print("eval state"+str(i) + " " + str(state[i][1]))
-
-    fSelect(1)
-
     for i in range(len(state)):
         print("eval state "+str(i) + " " + str(state[i][1]))
     '''
