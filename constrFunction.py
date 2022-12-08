@@ -16,6 +16,83 @@ def initiateConstr(gl, pl, vgs, vps, nc, unw, pref, pr, pa):
     pair = pr
     partAssign = pa
 
+def oneBigConstr(sch):
+    for i in range(len(days)):
+        for j in range(len(times)):
+            slot = sch.getSchedule()[i][j]
+            slotGames = slot.getGames()
+            slotPracs = slot.getPractices()
+
+            # hc4
+            for game in slotGames:
+                gameComponents = game.split(" ")
+                for prac in slotPracs:
+                    pracComponents = prac.split(" ")
+                    if (gameComponents[0] == pracComponents[0] and gameComponents[1] == pracComponents[1] and \
+                            (len(pracComponents) < 6 or gameComponents[3] == pracComponents[3])):
+                        return False
+
+            # hc5
+            for (a, b) in notCompatible:
+                if((a in slotGames or a in slotPracs) and (b in slotGames or b in slotPracs)):
+                        return False
+
+            # hc6
+            if j < 20:
+                for game in slotGames:
+                    if ("DIV 9" in game):
+                        return False
+                for prac in slotPracs:
+                    if ("DIV 9" in prac):
+                        return False
+            
+            # hc7
+            for unwant_sched in unwanted:
+                gameorprac = unwant_sched[0]
+                day = unwant_sched[1]
+                time = unwant_sched[2]
+                for game in sch.getSchedule()[days[day]][times[time]].getGames():
+                    if(game == gameorprac):
+                        return False
+                for prac in sch.getSchedule()[days[day]][times[time]].getPractices():
+                    if(prac == gameorprac):
+                        return False
+
+            # hc8
+            sched = sch.getSchedule()
+            if(len(sched[days["TU"]][6].getGames()) != 0):
+                return False
+
+            # hc9
+            for game1 in slotGames:
+                if ("U15" in game1 or "U16" in game1 or "U17" in game1 or "U19" in game1):
+                    for game2 in slotGames:
+                        if ("U15" in game2 or "U16" in game2 or "U17" in game2 or "U19" in game2) and (game1 != game2):
+                            return False
+
+            # hc10
+            for p in slotPracs:
+                # check U12T1S
+                if ("CMSA U12T1S" in p):
+                    for prac in slotPracs:
+                        if ("CMSA U12T1 " in prac):
+                            return False
+                    for game in slotGames:
+                        if ("CMSA U12T1 " in game):
+                            return False
+                # check U13T1S
+                if ("CMSA U13T1S" in p):
+                    for prac in slotPracs:
+                        if ("CMSA U13T1 " in prac):
+                            return False
+                    for game in slotGames:
+                        if ("CMSA U13T1 " in game):
+                            return False
+                    break
+            
+
+    return True
+
 # Check partial assignments                                                             DONE
 def check_hc1(sch):
     sched = sch.getSchedule()
@@ -102,70 +179,6 @@ def check_hc5(sch):
                 if((a in games or a in pracs) and (b in games or b in pracs)):
                         return False
     return True
-
-
-#Constraints 7, 8, and 9 are already checked when we add a game/practice
-'''
-def check_hc7(sch):
-   for i in range(len(sch.getSchedule()[days["MO"]])):
-        mon_games = sch.getSchedule()[days["MO"]][i].getGames()
-        wed_games = sch.getSchedule()[days["WE"]][i].getGames()
-        fri_games = sch.getSchedule()[days["FR"]][i].getGames()
-        if(len(mon_games) != len(wed_games) or len(mon_games) != len(fri_games)):
-            return False
-        for mon_game in mon_games:
-            if(mon_game not in wed_games):
-                return False
-            if(mon_game not in fri_games):
-                return False
-   return True
-
-#checks to see if Monday/Wednesday practices are at the same time
-#may not pass on all partial scehdules
-
-def check_hc8(sch):
-    for i in range(len(sch.getSchedule()[days["MO"]])):
-        mon_pracs = sch.getSchedule()[days["MO"]][i].getPractices()
-        wed_pracs = sch.getSchedule()[days["WE"]][i].getPractices()
-        if(len(mon_pracs) != len(wed_pracs)):
-            return False
-        
-        for mon_prac in mon_pracs:
-            if(mon_prac not in wed_pracs):
-                return False
-    
-    return True
-        
-
-#checks to see if Tuesday/Thrusday games and practices are at the same time
-#may not pass on all partial scehdules
-
-
-def check_hc9(sch):
-    for i in range(len(sch.getSchedule()[days["TU"]])):
-        tues_games = sch.getSchedule()[days["TU"]][i].getGames()
-        thur_games = sch.getSchedule()[days["TH"]][i].getGames()
-
-        tues_pracs = sch.getSchedule()[days["TU"]][i].getPractices()
-        thur_pracs = sch.getSchedule()[days["TH"]][i].getPractices()
-
-        if(len(tues_games) != len(thur_games)):
-            return False
-        if(len(tues_pracs) != len(thur_pracs)):
-            return False
-        
-        for tues_game in tues_games:
-            if(tues_game not in thur_games):
-                return False
-        
-        for tues_prac in tues_pracs:
-            if tues_prac not in thur_pracs:
-                return False
-        
-    return True
-
-'''
-
 
 
 ##Checks to make sure games in DIV 9X are not scheduled before 18:00                            DONE
@@ -274,9 +287,10 @@ def check_hc10(sch):
 # THIS IS A SUPER BASIC IMPLEMENTATION OF CONSTR() TO TEST REPAIR TREE - THIS STILL NEEDS TO BE PROPERLY IMPLEMENTED BASED ON pg. 2 OF REPORT 
 def constr(sch):
 
-    hc1 = check_hc1(sch)
-    hc2 = check_hc2(sch)
-    hc3 = check_hc3(sch)
+    #hc1 = check_hc1(sch)
+    #hc2 = check_hc2(sch)
+    #hc3 = check_hc3(sch)
+    '''
     hc4 = check_hc4(sch)
     hc5 = check_hc5(sch)
     hc6 = check_hc6(sch)
@@ -285,4 +299,7 @@ def constr(sch):
     hc9 = check_hc9(sch)
     hc10 = check_hc10(sch)
 
-    return hc1 and hc2 and hc3 and hc4 and hc5 and hc6 and hc7 and hc8 and hc9 and hc10
+    return hc4 and hc5 and hc6 and hc7 and hc8 and hc9 and hc10
+    '''
+
+    return oneBigConstr(sch)
