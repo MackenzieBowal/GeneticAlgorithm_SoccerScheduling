@@ -1,0 +1,9 @@
+Name: 
+U15/U16/U17/U19 conflict test - invalid input
+ 
+Game slots: 
+TU, 11:00, 3, 0
+ 
+Games: 
+CSMA U17T1 DIV 01
+CSMA U15T1 DIV 01
