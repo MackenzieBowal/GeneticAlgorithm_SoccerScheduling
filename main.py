@@ -148,13 +148,13 @@ def parse(file):
                 day = components[1].strip()
                 time = components[2].strip()
                 if ("PRC" in game) or ("OPN" in game):
-                    if (day,time) in validGameSlots:
+                    if (days[day],times[time]) in validPracSlots:
                         sched.addPractice(days[day], times[time], game)
                         pracList.remove(game)
                     else:
                         sys.exit("Partial assignment to an invalid time slot!")
                 else:
-                    if (day,time) in validPracSlots:
+                    if (days[day],times[time]) in validGameSlots:
                         sched.addGame(days[day], times[time], game)
                         gamesList.remove(game)
                     else:
