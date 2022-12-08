@@ -78,7 +78,7 @@ def fWert():
     if len(state) < 5:
         return 0
 
-    elif len(state) < 25:
+    elif len(state) < 20:
         return 1
 
     else:
@@ -93,11 +93,6 @@ def fSelect(fWertScore):
     # random generation
     if fWertScore == 0:
 
-        ''' debugging
-        newSch = sched.newSchedule()
-        newSch.addGame(0, 1, 'CMSA U12T1 DIV 01')
-        newSch.addGame(0, 1, 'CMSA U12T1 DIV 02')
-        '''
         newSch = sched.newSchedule()
         for game in gamesList:
             slotNum = random.randint(0, len(validGameSlots)-1)
@@ -122,6 +117,8 @@ def fSelect(fWertScore):
         randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
         while (randSchedule == None):
             counter +=1
+            if counter > len(validGameSlots):
+                sys.exit("Cannot create a valid schedule")
             print("retrying")
             randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList, counter)
         print("done repairing")
@@ -311,32 +308,12 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     global unassignedPracs
     unassignedGames = copy.copy(gamesList)
     unassignedPracs = copy.copy(pracList)
-    '''
-    for gp in partAssign:
-        if ("PRC" in gp[0] or "OPN" in gp[0]):
-            unassignedPracs.remove(gp[0])
-        else:
-            print(unassignedGames)
-            unassignedGames.remove(gp[0])
-    '''
-
     # start with an empty state, declared at the top of the file
 
-    '''
-    state.append(('five', 5))
-    state.append(('too', 2))
-    state.append(('ate', 8))
-    state.append(('nine', 9))
-    state.append(('six', 6))
-    state.append(('won', 1))
-    state.append(('fore', 4))
-    state.append(('two', 2))
-    state.append(('three', 3))
-    '''
     random.seed()
     sortState()
     
-    for i in range(100):
+    for i in range(50):
 
         print("\nSTATE: ")
         for ind in state:
@@ -350,13 +327,6 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     sortState()
     print("Final eval: "+str(state[len(state)-1][1]))
     '''
-    sortState()
-
-    for i in range(len(state)):
-        print("eval state"+str(i) + " " + str(state[i][1]))
-
-    fSelect(1)
-
     for i in range(len(state)):
         print("eval state "+str(i) + " " + str(state[i][1]))
     '''
