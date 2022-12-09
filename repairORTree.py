@@ -3,7 +3,6 @@
 #                  If you want to generate a valid, complete schedule from scratch, just set "useInspiration" to False so that the tree executes as a normal OR tree. 
 
 import copy
-from ctypes import sizeof
 from constants import *
 import schedule
 import node
@@ -33,6 +32,7 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         # try again
         print("\nGeneration "+str(generation))
         print("Running Altern round: ", counter)
+        print("Fringe size: "+str(fringe.qsize()))
         counter += 1
 
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
