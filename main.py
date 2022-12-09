@@ -182,7 +182,6 @@ numPracsTotal = 0
 numGameSpaces = 0
 numPracSpaces = 0
 
-
 # read the input text file from the command line
 try: file = sys.argv[1]
 except: sys.exit("Must provide a program description in a text file.")

@@ -15,7 +15,6 @@ import constrFunction
 # state contains two objects for each individual: the schedule and its eval-score
 state = []
 
-
 # sortState()
 # sort all the individuals in order of their eval-score
 def sortState():
@@ -256,7 +255,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     random.seed()
     sortState()
     
-    for i in range(200):
+    for i in range(50):
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)
