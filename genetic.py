@@ -260,7 +260,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     global generation
     generation = 0
 
-    for i in range(50):
+    for i in range(25):
         generation = i
         print("Genetic Generation "+str(generation))
         fw = fWert()
