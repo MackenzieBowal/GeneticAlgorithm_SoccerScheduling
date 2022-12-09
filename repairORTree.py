@@ -83,6 +83,11 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
         print("\nRunning Altern round: ", counter)
         counter += 1
 
+        # Break out if you're stuck
+        if (len(currentNode.getPracLeft()) > 100) and counter > 100:
+            return "Try again"
+
+
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
         
         currentGameorPrac = ""
@@ -96,8 +101,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             pracAvailable = currentNode.getPracLeft()
             currentGameorPrac = pracAvailable[0]
 
-        print("Expanding g/p: "+currentGameorPrac)
-        print("num alterns: "+str(len(listPossibleExpansions)))
+        #print("Expanding g/p: "+currentGameorPrac)
+        #print("num alterns: "+str(len(listPossibleExpansions)))
 
 
         # Add expanded nodes to Priority Queue 
@@ -150,8 +155,8 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
                 sys.exit("")
 
             '''
-            print("PQ size: "+str(fringe.qsize()))
-            print("total sched size: "+str(len(allSchedules)))
+            #print("PQ size: "+str(fringe.qsize()))
+            #print("total sched size: "+str(len(allSchedules)))
 
             #Used for debugging
             #print("the ftrans output is ", output)

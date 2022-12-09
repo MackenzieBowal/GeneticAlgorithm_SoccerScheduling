@@ -56,16 +56,16 @@ class RepairNode:
         self._id = id(self)
 
     def setSchedule(self, newSchedule):
-        self.mySched = copy.copy(newSchedule)
+        self.mySched = copy.deepcopy(newSchedule)
 
     def setGamesLeft(self, newGamesLeft):
-        self.gamesLeft = newGamesLeft
+        self.gamesLeft = copy.deepcopy(newGamesLeft)
 
     def setPracLeft(self, newPracLeft):
-        self.pracLeft = newPracLeft
+        self.pracLeft = copy.deepcopy(newPracLeft)
 
     def setDepth(self, newDepth):
-        self.depth = newDepth
+        self.depth = copy.deepcopy(newDepth)
 
     def setSolEntry(self, newSolEntry):
         self.solEntry = newSolEntry

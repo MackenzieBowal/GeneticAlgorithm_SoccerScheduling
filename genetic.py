@@ -50,7 +50,7 @@ def findTimeslot(sch, gameprac):
 def fWert():
 
     # first 5 are randomly generated
-    if len(state) < 10:
+    if len(state) < 5:
         return 0
 
     elif len(state) < 50:
@@ -260,7 +260,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     sortState()
     i = 0
 
-    while i < 50:
+    while i < 25:
         startlen = len(state)
         print("Generation "+str(i))
         fw = fWert()
@@ -269,6 +269,20 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
         
         if startlen != len(state):
             i+=1
+
+            sortState()
+            print("\n\n--------------------------------------------------\nEval-value: "+str(state[len(state)-1][1]))
+
+            assignment = state[len(state)-1][0].getAssignment()
+            assignment = sorted(assignment)
+
+            for assign in assignment:
+                if (len(assign[0])<16):
+                    print(assign[0]+"\t\t\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
+                elif (len(assign[0])<23):
+                    print(assign[0]+"\t\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
+                else:
+                    print(assign[0]+"\t:"+reverseDays[assign[1]]+", "+reverseTimes[assign[2]])
     
     sortState()
     print("\n\n--------------------------------------------------\nEval-value: "+str(state[len(state)-1][1]))
