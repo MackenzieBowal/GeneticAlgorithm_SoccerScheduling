@@ -195,32 +195,18 @@ if (numPracsTotal > numPracSpaces):
     sys.exit("Too many practices for the number of slots")
 
 # Automatically assign hard constraint practices
-if (specialPracsExist):
-    if (specialGamesExist):
-        # U12T1S first
-        for prac in pracList:
-            if ("CMSA U12T1S" in prac):
-                components = prac.split(" ")
-                divNum = components[len(components)-1].strip()
-                for game in gamesList:
-                    if ("CMSA U12T1" in game and (divNum in game or len(components) < 6)):
-                        print("assigning CMSA U12T1S")
-                        worked = sched.addPractice(days['TU'], times['18:00'], prac, validPracSlots)
-                        pracList.remove(prac)
-                        if (not worked):
-                            sys.exit("\nCould not allocate CMSA U12T1S to a valid practice slot\n")
-        # U13T1S second
-        for prac in pracList:
-            if ("CMSA U13T1S" in prac):
-                components = prac.split(" ")
-                divNum = components[len(components)-1].strip()
-                for game in gamesList:
-                    if ("CMSA U13T1" in game and (divNum in game or len(components) < 6)):
-                        worked = sched.addPractice(days['TU'], times['18:00'], prac, validPracSlots)
-                        pracList.remove(prac)
-                        if (not worked):
-                            sys.exit("\nCould not allocate CMSA U13T1S to a valid practice slot\n")
-
+if (specialGamesExist):
+    # U12T1S first
+    for game in specialGamesList:
+        if ("CMSA U12T1" in game):
+            worked = sched.addPractice(days['TU'], times['18:00'], "CMSA U12T1S", validPracSlots)
+            if (not worked):
+                sys.exit("\nCould not allocate CMSA U12T1S to a valid practice slot\n") 
+    for game in specialGamesList:
+        if ("CMSA U13T1" in game):
+            worked = sched.addPractice(days['TU'], times['18:00'], "CMSA U13T1S", validPracSlots)
+            if (not worked):
+                sys.exit("\nCould not allocate CMSA U13T1S to a valid practice slot\n") 
 
 
 print("sched:")
