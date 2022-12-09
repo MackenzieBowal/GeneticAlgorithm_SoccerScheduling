@@ -262,7 +262,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
         fSelect(fw)
     
     sortState()
-    print("Eval-value: "+str(state[len(state)-1][1]))
+    print("\n\n--------------------------------------------------\nEval-value: "+str(state[len(state)-1][1]))
 
     assignment = state[len(state)-1][0].getAssignment()
     assignment = sorted(assignment)
