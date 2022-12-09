@@ -87,7 +87,7 @@ def fSelect(fWertScore):
                 slot = validPracSlots[slotNum]
                 worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac, validPracSlots)
 
-        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
+        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList, generation)
         if (randSchedule != "Try again"):
             state.append((randSchedule, evalFunction.eval(randSchedule)))
             print("randomized eval: "+str(state[len(state)-1][1]))
@@ -155,7 +155,7 @@ def fSelect(fWertScore):
                 else:
                     sys.exit("Parent had no practice assigned")
             
-            newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList)
+            newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList, generation)
             if (newIndividual != "Try again"):
                 state.append((newIndividual, evalFunction.eval(newIndividual)))
                 print("mutated eval: "+str(state[len(state)-1][1]))
@@ -219,7 +219,7 @@ def fSelect(fWertScore):
                         child.addPractice(day, time, prac, validPracSlots)
                         if (day != -1 and time != -1):
                             return
-            newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)
+            newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList, generation)
             if (newIndividual != "Try again"):
                 state.append((newIndividual, evalFunction.eval(newIndividual)))
                 print("crossovered eval: "+str(state[len(state)-1][1]))
@@ -257,9 +257,12 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
 
     random.seed()
     sortState()
+    global generation
+    generation = 0
 
     for i in range(50):
-        print("Generation "+str(i))
+        generation = i
+        print("Genetic Generation "+str(generation))
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)
