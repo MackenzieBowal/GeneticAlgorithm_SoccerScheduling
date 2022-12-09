@@ -30,15 +30,11 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     while (continueExpandingTree):
         #Define and call Altern
 
-        #print("Running Altern round: ", counter)
+        print("Running Altern round: ", counter)
         counter += 1
-        #currentNode.getSchedule().printSchedule()
 
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
         
-        #Uncomment this for debugging 
-        #print("Finished altern #"+str(counter))
-
         currentGameorPrac = ""
         isGame = False
         #Find the current game/practice in discussion 
@@ -60,9 +56,9 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
                 # Priority queue pulls items with lowest number as most prioritized from the top, so we subtract 1 for higher priority 
                 # (Note - this is not consistent with Proposal description)
                 # We add the nodeID as argument because we need to break ties for priorities in the queue (Python syntax)
-                fringe.put((1/(item.getDepth()//2 + 1), item.getID(), item))
+                fringe.put((1/(item.getDepth() + 1), item.getID(), item))
             else:
-                fringe.put((1/(item.getDepth()//2 + 1)+1, item.getID(), item))
+                fringe.put((1/(item.getDepth() + 1)+1, item.getID(), item))
 
         #Loop is useful to come back to pre-populated fringe when the node selected has an invalid schedule 
         while(True): 
@@ -153,17 +149,6 @@ def altern(currentNode, listValidGameSlots, listValidPracSlots):
 
     return listOfSchedules
 
-
-
-#Used to debug Altern
-def printAlternGeneration(listSchedules):
-    counter = 0
-    for node in listSchedules:
-        print("Alternative ", counter)
-        counter += 1 
-        node.getSchedule().printSchedule()
-
-
 #Inputs: reference schedule, current node from altern list, the game/practice we are finding in both schedules 
 #Outputs: True if both schedules place the game/practice in the same slot, False otherwise 
 #Purpose: Supports prioritization method in fleaf for repair functionality of OR Tree 
@@ -206,15 +191,19 @@ def follows(inspirationSchedule, currentNode, currentGameorPrac):
 #Purpose: Supports expansion method in OR Tree 
 def ftrans(checkNode):
     passesHardConstraints = constrFunction.constr(checkNode.getSchedule(), checkNode.getCurrGamePrac(), checkNode.getIsGame())
+    print("This node has "+str(len(checkNode.getGamesLeft()))+" games left and "+str(len(checkNode.getPracLeft()))+" practices left")
     # We don't need to explicitly change the sol-entry because if it is no, the node is discarded because it was already pulled from fringe 
     # If the sol-entry should be yes, we return this schedule in repairSchedule() anyways 
     # The default sol-entry in a node is ? so we don't need to change if the node is passed to altern 
     if (passesHardConstraints and ((checkNode.getGamesLeft() == []) and (checkNode.getPracLeft() == []))):
         # Solution found 
+        print("found one!")
         return 1
     elif (not passesHardConstraints):
         # Discard node
+        print("violates hard constraints")
         return 2
     else:
+        print("incomplete")
         # Expand node 
         return 3

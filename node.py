@@ -29,7 +29,7 @@ class RepairNode:
 
     def setIsGame(self, isGame):
         self.isGame = isGame
-        
+    
     def newNode(self):
         return copy.deepcopy(self)
     
