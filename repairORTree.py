@@ -11,30 +11,6 @@ from queue import PriorityQueue
 import sys
 import constrFunction
 
-def compareSchedules(sch1, sch2):
-    assign1 = sch1.getAssignment()
-    assign2 = sch2.getAssignment()
-
-    if len(assign1) != len(assign2):
-        return 0
-
-    same = True
-    oneSame = False
-    for a1 in assign1:
-        oneSame = False
-        for a2 in assign2:
-            if a1 == a2:
-                oneSame = True
-                break
-        if not oneSame:
-            same = False
-            break
-    
-    if same:
-        return 1
-
-    return 0
-
 
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
 #Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
@@ -47,10 +23,6 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     rootNode.setPracLeft(listAllPrac)
     continueExpandingTree = True
     currentNode = rootNode
-
-    allSchedules = []
-
-    sumDepth = 0
 
     counter = 0
     fringe =  PriorityQueue()
@@ -75,10 +47,6 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             pracAvailable = currentNode.getPracLeft()
             currentGameorPrac = pracAvailable[0]
 
-        print("Expanding g/p: "+currentGameorPrac)
-        print("num alterns: "+str(len(listPossibleExpansions)))
-
-
         # Add expanded nodes to Priority Queue 
         for item in listPossibleExpansions:
 
@@ -88,7 +56,6 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             # only add nodes to the queue if they're valid
             isValid = constrFunction.constr(item.getSchedule(), currentGameorPrac, isGame)
             if isValid:
-                allSchedules.append(item.getSchedule())
                 #if you want to generate a valid schedule without a reference, the useInspiration flag should be False
                 if (useInspiration and follows(inspirationSchedule, item, currentGameorPrac)):
                     # Priority queue pulls items with lowest number as most prioritized from the top, so we subtract 1 for higher priority 
@@ -114,38 +81,14 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             #Get Node from fleaf and Pass to ftrans
             output = ftrans(checkNode)
 
-            '''
-            print("\ntrying schedule:")
-            checkNode.getSchedule().printSchedule()
-
-            numSameScheds = 0
-            for sched in allSchedules:
-                numSameScheds += compareSchedules(sched, checkNode.getSchedule())
-            
-            if numSameScheds > 1:
-                #sch1.printSchedule()
-                #sch2.printSchedule()
-                print("These schedules are the same!")
-                sys.exit("")
-
-            '''
-            print("PQ size: "+str(fringe.qsize()))
-            print("total sched size: "+str(len(allSchedules)))
-
-            #Used for debugging
-            #print("the ftrans output is ", output)
-            #print("fringe size is "+str(fringe.qsize()))
-
             if (output == 1):
                 #the schedule is complete and meets all hard constraints - DONE
                 return checkNode.getSchedule()
             elif (output == 2):
                 #the schedule is invalid and we need a new node from the fringe
-                print("Discarding node")
                 continue
             elif (output == 3):
                 #the schedule is valid but incomplete and we pass this node to altern again 
-                print("Expanding node")
                 currentNode = checkNode
                 break 
 
@@ -249,7 +192,7 @@ def follows(inspirationSchedule, currentNode, currentGameorPrac):
 #Purpose: Supports expansion method in OR Tree 
 def ftrans(checkNode):
     passesHardConstraints = constrFunction.constr(checkNode.getSchedule(), checkNode.getCurrGamePrac(), checkNode.getIsGame())
-    print("This node has "+str(len(checkNode.getGamesLeft()))+" games left and "+str(len(checkNode.getPracLeft()))+" practices left")
+    print("This node has "+str(len(checkNode.getGamesLeft()))+" games left to assign and "+str(len(checkNode.getPracLeft()))+" practices left")
     # We don't need to explicitly change the sol-entry because if it is no, the node is discarded because it was already pulled from fringe 
     # If the sol-entry should be yes, we return this schedule in repairSchedule() anyways 
     # The default sol-entry in a node is ? so we don't need to change if the node is passed to altern 
