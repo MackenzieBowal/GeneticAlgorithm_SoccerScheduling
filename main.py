@@ -194,6 +194,7 @@ if (numGamesTotal > numGameSpaces):
 if (numPracsTotal > numPracSpaces):
     sys.exit("Too many practices for the number of slots")
 
+'''
 # Automatically assign hard constraint practices
 if (specialGamesExist):
     # U12T1S first
@@ -207,7 +208,7 @@ if (specialGamesExist):
             worked = sched.addPractice(days['TU'], times['18:00'], "CMSA U13T1S", validPracSlots)
             if (not worked):
                 sys.exit("\nCould not allocate CMSA U13T1S to a valid practice slot\n") 
-
+'''
 
 print("sched:")
 print("Games:", gamesList)

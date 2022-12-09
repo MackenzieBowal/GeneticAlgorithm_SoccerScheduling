@@ -88,8 +88,9 @@ def fSelect(fWertScore):
                 worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac, validPracSlots)
 
         randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
-        state.append((randSchedule, evalFunction.eval(randSchedule)))
-        print("randomized eval: "+str(state[len(state)-1][1]))
+        if (randSchedule != "Try again"):
+            state.append((randSchedule, evalFunction.eval(randSchedule)))
+            print("randomized eval: "+str(state[len(state)-1][1]))
 
 
     # mutation/crossover
@@ -155,8 +156,9 @@ def fSelect(fWertScore):
                     sys.exit("Parent had no practice assigned")
             
             newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList)
-            state.append((newIndividual, evalFunction.eval(newIndividual)))
-            print("mutated eval: "+str(state[len(state)-1][1]))
+            if (newIndividual != "Try again"):
+                state.append((newIndividual, evalFunction.eval(newIndividual)))
+                print("mutated eval: "+str(state[len(state)-1][1]))
 
         else:
             print("crossovering")
@@ -218,8 +220,9 @@ def fSelect(fWertScore):
                         if (day != -1 and time != -1):
                             return
             newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)
-            state.append((newIndividual, evalFunction.eval(newIndividual)))
-            print("crossovered eval: "+str(state[len(state)-1][1]))
+            if (newIndividual != "Try again"):
+                state.append((newIndividual, evalFunction.eval(newIndividual)))
+                print("crossovered eval: "+str(state[len(state)-1][1]))
 
     # delete bottom 5 
     elif fWertScore == 2:
@@ -254,12 +257,17 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
 
     random.seed()
     sortState()
-    
-    for i in range(50):
+    i = 0
+
+    while i < 50:
+        startlen = len(state)
         print("Generation "+str(i))
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)
+        
+        if startlen != len(state):
+            i+=1
     
     sortState()
     print("\n\n--------------------------------------------------\nEval-value: "+str(state[len(state)-1][1]))

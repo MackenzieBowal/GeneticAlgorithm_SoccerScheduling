@@ -3,6 +3,7 @@
 #                  If you want to generate a valid, complete schedule from scratch, just set "useInspiration" to False so that the tree executes as a normal OR tree. 
 
 import copy
+from ctypes import sizeof
 from constants import *
 import schedule
 import node
@@ -10,6 +11,29 @@ from queue import PriorityQueue
 import sys
 import constrFunction
 
+def compareSchedules(sch1, sch2):
+    assign1 = sch1.getAssignment()
+    assign2 = sch2.getAssignment()
+
+    if len(assign1) != len(assign2):
+        return 0
+
+    same = True
+    oneSame = False
+    for a1 in assign1:
+        oneSame = False
+        for a2 in assign2:
+            if a1 == a2:
+                oneSame = True
+                break
+        if not oneSame:
+            same = False
+            break
+    
+    if same:
+        return 1
+
+    return 0
 
 
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
@@ -24,13 +48,18 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     continueExpandingTree = True
     currentNode = rootNode
 
+    allSchedules = []
+
+    sumDepth = 0
+
     counter = 0
     fringe =  PriorityQueue()
 
     while (continueExpandingTree):
         #Define and call Altern
 
-        print("Running Altern round: ", counter)
+        # try again
+        print("\nRunning Altern round: ", counter)
         counter += 1
 
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
@@ -42,10 +71,13 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             gamesAvailable = currentNode.getGamesLeft()
             currentGameorPrac = gamesAvailable[0]
             isGame = True
-
         elif (len(currentNode.getPracLeft())>0):
             pracAvailable = currentNode.getPracLeft()
             currentGameorPrac = pracAvailable[0]
+
+        print("Expanding g/p: "+currentGameorPrac)
+        print("num alterns: "+str(len(listPossibleExpansions)))
+
 
         # Add expanded nodes to Priority Queue 
         for item in listPossibleExpansions:
@@ -56,14 +88,16 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
             # only add nodes to the queue if they're valid
             isValid = constrFunction.constr(item.getSchedule(), currentGameorPrac, isGame)
             if isValid:
+                allSchedules.append(item.getSchedule())
                 #if you want to generate a valid schedule without a reference, the useInspiration flag should be False
                 if (useInspiration and follows(inspirationSchedule, item, currentGameorPrac)):
                     # Priority queue pulls items with lowest number as most prioritized from the top, so we subtract 1 for higher priority 
                     # (Note - this is not consistent with Proposal description)
                     # We add the nodeID as argument because we need to break ties for priorities in the queue (Python syntax)
-                    fringe.put((1/(item.getDepth() + 1), item.getID(), item))
+                    fringe.put((-(item.getDepth()*2 + 1), item.getID(), item))
                 else:
-                    fringe.put((1/(item.getDepth() + 1)+1, item.getID(), item))
+                    #print("Priority: "+str(-(item.getDepth()*2)))
+                    fringe.put((-(item.getDepth()*2), item.getID(), item))
 
         #Loop is useful to come back to pre-populated fringe when the node selected has an invalid schedule 
         while(True): 
@@ -72,14 +106,31 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
             #if all fringe schedules have been checked, then there is no valid schedule that can be produced
             if (fringe.empty()==True):
-                sys.exit("A valid schedule cannot be produced.")
+                sys.exit("A valid schedule cannot be produced.")                
 
             checkTuple = fringe.get()
             checkNode = checkTuple[2]
 
-            #print("Reached ftrans")
             #Get Node from fleaf and Pass to ftrans
             output = ftrans(checkNode)
+
+            '''
+            print("\ntrying schedule:")
+            checkNode.getSchedule().printSchedule()
+
+            numSameScheds = 0
+            for sched in allSchedules:
+                numSameScheds += compareSchedules(sched, checkNode.getSchedule())
+            
+            if numSameScheds > 1:
+                #sch1.printSchedule()
+                #sch2.printSchedule()
+                print("These schedules are the same!")
+                sys.exit("")
+
+            '''
+            print("PQ size: "+str(fringe.qsize()))
+            print("total sched size: "+str(len(allSchedules)))
 
             #Used for debugging
             #print("the ftrans output is ", output)
@@ -90,9 +141,11 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
                 return checkNode.getSchedule()
             elif (output == 2):
                 #the schedule is invalid and we need a new node from the fringe
+                print("Discarding node")
                 continue
             elif (output == 3):
                 #the schedule is valid but incomplete and we pass this node to altern again 
+                print("Expanding node")
                 currentNode = checkNode
                 break 
 
@@ -202,13 +255,10 @@ def ftrans(checkNode):
     # The default sol-entry in a node is ? so we don't need to change if the node is passed to altern 
     if (passesHardConstraints and ((checkNode.getGamesLeft() == []) and (checkNode.getPracLeft() == []))):
         # Solution found 
-        print("found one!")
         return 1
     elif (not passesHardConstraints):
         # Discard node
-        print("violates hard constraints")
         return 2
     else:
-        print("incomplete")
         # Expand node 
         return 3
