@@ -49,16 +49,21 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
 
         # Add expanded nodes to Priority Queue 
         for item in listPossibleExpansions:
+
             item.setCurrGamePrac(currentGameorPrac)
             item.setIsGame(isGame)
-            #if you want to generate a valid schedule without a reference, the useInspiration flag should be False
-            if (useInspiration and follows(inspirationSchedule, item, currentGameorPrac)):
-                # Priority queue pulls items with lowest number as most prioritized from the top, so we subtract 1 for higher priority 
-                # (Note - this is not consistent with Proposal description)
-                # We add the nodeID as argument because we need to break ties for priorities in the queue (Python syntax)
-                fringe.put((1/(item.getDepth() + 1), item.getID(), item))
-            else:
-                fringe.put((1/(item.getDepth() + 1)+1, item.getID(), item))
+
+            # only add nodes to the queue if they're valid
+            isValid = constrFunction.constr(item.getSchedule(), currentGameorPrac, isGame)
+            if isValid:
+                #if you want to generate a valid schedule without a reference, the useInspiration flag should be False
+                if (useInspiration and follows(inspirationSchedule, item, currentGameorPrac)):
+                    # Priority queue pulls items with lowest number as most prioritized from the top, so we subtract 1 for higher priority 
+                    # (Note - this is not consistent with Proposal description)
+                    # We add the nodeID as argument because we need to break ties for priorities in the queue (Python syntax)
+                    fringe.put((1/(item.getDepth() + 1), item.getID(), item))
+                else:
+                    fringe.put((1/(item.getDepth() + 1)+1, item.getID(), item))
 
         #Loop is useful to come back to pre-populated fringe when the node selected has an invalid schedule 
         while(True): 
