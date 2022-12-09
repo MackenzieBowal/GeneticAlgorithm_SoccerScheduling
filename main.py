@@ -219,6 +219,7 @@ print("Preferences:", preferences)
 print("Pair:", pair)
 print("Partial assignments:", partassign)
 
+
 evalFunction.initiateEval(wMinFilled, wPref, wPair, wSecDiff, penGameMin, penPracticeMin, preferences, penNotPaired, penSection, pair)
 constrFunction.initiateConstr(gamesList, pracList, validGameSlots, validPracSlots, notCompatible, unwanted, preferences, pair, partassign)
 

@@ -247,6 +247,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     pracList = p
     partAssign = pa
 
+
     # create a list of games and practices that are not automatically assigned
     global unassignedGames
     global unassignedPracs

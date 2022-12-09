@@ -39,8 +39,31 @@ def compareSchedules(sch1, sch2):
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
 #Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
 #Purpose: takes in a reference schedule and repairs it to make it valid. This function can also be used to generate valid schedules to fill the population at the beginning.
-def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac):
+def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, lag, lap):
     #Create root node 
+
+    listGames = copy.deepcopy(lag)
+    listPracs = copy.deepcopy(lap)
+
+    listAllGames = []
+    listAllPrac = []
+
+    # order game and practice lists to assign DIV 9 first (hard constraint optimization)
+    for game in listGames:
+        if ("DIV 9" in game):
+            listAllGames.append(game)
+            listGames.remove(game)
+    for game in listGames:
+        listAllGames.append(game)
+
+    for prac in listPracs:
+        if ("DIV 9" in prac):
+            listAllPrac.append(prac)
+            listPracs.remove(prac)
+    for prac in listPracs:
+        listAllPrac.append(prac)
+
+
     rootNode = node.RepairNode()
     rootNode.setSchedule(templateSchedule)
     rootNode.setGamesLeft(listAllGames)
@@ -49,8 +72,6 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     currentNode = rootNode
 
     allSchedules = []
-
-    sumDepth = 0
 
     counter = 0
     fringe =  PriorityQueue()
@@ -170,6 +191,7 @@ def altern(currentNode, listValidGameSlots, listValidPracSlots):
             #print(success)
 
             if success:
+                #print("adding g "+myGamesLeft[0]+" to timeslot: "+str(day)+" "+str(time))
                 myGamesLeft.remove(myGamesLeft[0])
                 copyNode = currentNode.newNode()
                 copyNode.setSchedule(copySchedule)
