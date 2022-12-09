@@ -256,6 +256,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     sortState()
     
     for i in range(50):
+        print("Generation "+str(i))
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)

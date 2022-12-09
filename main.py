@@ -232,66 +232,6 @@ print("Preferences:", preferences)
 print("Pair:", pair)
 print("Partial assignments:", partassign)
 
-"""
-#EXAMPLE 1: CREATING A SCHEDULE
-
-s1 = sched.newSchedule() #calling newSchedule() on the template schedule created by parse()
-
-#add games and practices to schedule
-#format: addGame(day of the week, timeslot index, name of game)
-#		 addPractice(day of the week, timeslot index, name of practice)
-for game in gamesList:
-    for day in range(sthedule.numDays):
-        for time in range(schedule.numTimeslots):
-            if ((day, time) in validGameSlots):
-                #if the time slot is in the list of valid ones, we can use it, check if (day, time) in validGameSlots
-                if s1.addGame(day, time, game):
-                    break
-        else: continue
-        break
-
-for practice in pracList:
-    for day in range(schedule.numDays):
-        for time in range(schedule.numTimeslots):
-            if ((day, time) in validPracSlots):
-                #if the time slot is in the list of valid ones, we can use it, check if (day, time) in validPracSlots
-                if s1.addPractice(day, time, practice):
-                    break
-        else: continue
-        break
-
-print("this is the potentially invalid schedule that we want to repair")
-s1.print() #prints the schedule
-
-END EXAMPLE
-
-
-
-#EXAMPLE 2: CREATING A RANDOM, VALID SCHEDULE
-"""
-"""
-repairedSchedule = repairSchedule(sched, None, False, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
-if (repairedSchedule == None):
-    print("Exception 1- no valid schedule found")
-else:
-    print("this is a random, valid schedule")
-    repairedSchedule.print()
-
-END EXAMPLE
-"""
-
-"""
-#EXAMPLE 3: REPAIRING A SCHEDULE
-
-repairedSchedule = repairSchedule(sched, s1, True, validGameSlots, validPracSlots, gamesList, pracList, constrBundle)
-if (repairedSchedule == None):
-   print("Exception 2- no valid schedule found")
-else:
-   print("this is the repaired schedule after taking the invalid one")
-   repairedSchedule.printSchedule()
-END EXAMPLE
-"""
-
 evalFunction.initiateEval(wMinFilled, wPref, wPair, wSecDiff, penGameMin, penPracticeMin, preferences, penNotPaired, penSection, pair)
 constrFunction.initiateConstr(gamesList, pracList, validGameSlots, validPracSlots, notCompatible, unwanted, preferences, pair, partassign)
 
