@@ -14,7 +14,7 @@ import constrFunction
 #Inputs: template schedule after parsing input, reference schedule if we are using one, Boolean for whether to use reference schedule, list of input-defined game slots, list of input-defined prac slots, all games, all pracs
 #Outputs: None if a valid & complete schedule could not be produced, otherwise a valid & complete schedule is returned
 #Purpose: takes in a reference schedule and repairs it to make it valid. This function can also be used to generate valid schedules to fill the population at the beginning.
-def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac, generation):
+def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listValidGameSlots, listValidPracSlots, listAllGames, listAllPrac):
     #Create root node 
     rootNode = node.RepairNode()
     rootNode.setSchedule(templateSchedule)
@@ -29,10 +29,6 @@ def repairSchedule(templateSchedule, inspirationSchedule, useInspiration, listVa
     while (continueExpandingTree):
         #Define and call Altern
 
-        # try again
-        print("\nGeneration "+str(generation))
-        print("Running Altern round: ", counter)
-        print("Fringe size: "+str(fringe.qsize()))
         counter += 1
 
         listPossibleExpansions = altern(currentNode, listValidGameSlots, listValidPracSlots)
@@ -193,7 +189,6 @@ def follows(inspirationSchedule, currentNode, currentGameorPrac):
 #Purpose: Supports expansion method in OR Tree 
 def ftrans(checkNode):
     passesHardConstraints = constrFunction.constr(checkNode.getSchedule(), checkNode.getCurrGamePrac(), checkNode.getIsGame())
-    print("This node has "+str(len(checkNode.getGamesLeft()))+" games left to assign and "+str(len(checkNode.getPracLeft()))+" practices left")
     # We don't need to explicitly change the sol-entry because if it is no, the node is discarded because it was already pulled from fringe 
     # If the sol-entry should be yes, we return this schedule in repairSchedule() anyways 
     # The default sol-entry in a node is ? so we don't need to change if the node is passed to altern 

@@ -22,7 +22,8 @@ def sortState():
     state = sorted(state, key=lambda s : s[1], reverse=True)
 
 # rouletteSelect()
-# takes a list of individuals and returns the one selected by a roulette function
+# takes a list of individuals and returns the one selected by a function
+# we changed it to not be roulette because this was simpler
 def rouletteSelect(stateList):
     # 10% chance of picking some random individual
     takeWorseIndividual = random.randint(0, 100)
@@ -69,6 +70,8 @@ def fSelect(fWertScore):
     if fWertScore == 0:
 
         newSch = sched.newSchedule()
+
+        # randomly assign all the games
         for game in gamesList:
             slotNum = random.randint(0, len(validGameSlots)-1)
             slot = validGameSlots[slotNum]
@@ -78,6 +81,7 @@ def fSelect(fWertScore):
                 slot = validGameSlots[slotNum]
                 worked = newSch.addGame(int(slot[0]), int(slot[1]), game, validGameSlots)
 
+        # randomly assign the practices
         for prac in pracList:
             slotNum = random.randint(0, len(validPracSlots)-1)
             slot = validPracSlots[slotNum]
@@ -87,7 +91,8 @@ def fSelect(fWertScore):
                 slot = validPracSlots[slotNum]
                 worked = newSch.addPractice(int(slot[0]), int(slot[1]), prac, validPracSlots)
 
-        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList, generation)
+        # repair the schedule
+        randSchedule = repairSchedule(sched, newSch, True, validGameSlots, validPracSlots, gamesList, pracList)
         if (randSchedule != "Try again"):
             state.append((randSchedule, evalFunction.eval(randSchedule)))
             print("randomized eval: "+str(state[len(state)-1][1]))
@@ -100,6 +105,8 @@ def fSelect(fWertScore):
             print("mutating")
             # mutation
             sortState()
+
+            # Select the parent
             indA = rouletteSelect(state)
             mutant = sched.newSchedule()
 
@@ -109,6 +116,7 @@ def fSelect(fWertScore):
             numGames = len(uGames)//10 + 1
             numPracs = len(uPracs)//10 + 1
 
+            # randomly change some of the games
             if (len(uGames) > 0):
                 # randomize 10% of the games
                 for i in range(numGames):
@@ -123,6 +131,7 @@ def fSelect(fWertScore):
                         day, time = validGameSlots[slot]
                         worked = mutant.addGame(day, time, game, validGameSlots)
 
+            # randomly change some of the practices
             if (len(uPracs) > 0):
                 # randomize 10% of the practices
                 for i in range(numPracs):
@@ -155,7 +164,8 @@ def fSelect(fWertScore):
                 else:
                     sys.exit("Parent had no practice assigned")
             
-            newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList, generation)
+            # Repair the schedule
+            newIndividual = repairSchedule(sched, mutant, True, validGameSlots, validPracSlots, gamesList, pracList)
             if (newIndividual != "Try again"):
                 state.append((newIndividual, evalFunction.eval(newIndividual)))
                 print("mutated eval: "+str(state[len(state)-1][1]))
@@ -164,6 +174,8 @@ def fSelect(fWertScore):
             print("crossovering")
             # crossover
             sortState()
+
+            # Select the parents
             indA = rouletteSelect(state)
             print("indA: "+str(indA))
             sortState()
@@ -174,6 +186,7 @@ def fSelect(fWertScore):
 
             child = sched.newSchedule()
 
+            # Assign the games
             for i in range(len(unassignedGames)):
                 game = unassignedGames[i]
                 # even games are indA
@@ -197,6 +210,7 @@ def fSelect(fWertScore):
                         if (day != -1 and time != -1):
                             return
             
+            # Assign the practices
             for i in range(len(unassignedPracs)):
                 prac = unassignedPracs[i]
                 # even pracs are indA
@@ -219,19 +233,23 @@ def fSelect(fWertScore):
                         child.addPractice(day, time, prac, validPracSlots)
                         if (day != -1 and time != -1):
                             return
-            newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList, generation)
+            
+            # Repair the schedule
+            newIndividual = repairSchedule(sched, child, True, validGameSlots, validPracSlots, gamesList, pracList)
             if (newIndividual != "Try again"):
                 state.append((newIndividual, evalFunction.eval(newIndividual)))
                 print("crossovered eval: "+str(state[len(state)-1][1]))
 
-    # delete bottom 5 
+    # delete bottom 5 individuals
     elif fWertScore == 2:
         sortState()
         state = state[5:]
 
     return
 
-
+# runGeneticAlgorithm()
+# Starts the loop that runs through the generations, calls fwert and fselect,
+# prints out the result
 def runGeneticAlgorithm(s, vG, vP, g, p, pa):
 
     global sched
@@ -257,17 +275,15 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
 
     random.seed()
     sortState()
-    global generation
-    generation = 0
 
-    for i in range(25):
-        generation = i
-        print("Genetic Generation "+str(generation))
+    # Run 50 generations
+    for i in range(50):
         fw = fWert()
         # note: fSelect also updates state
         fSelect(fw)
 
         
+    # Display the result
     sortState()
     print("\n\n--------------------------------------------------\nEval-value: "+str(state[len(state)-1][1]))
 
