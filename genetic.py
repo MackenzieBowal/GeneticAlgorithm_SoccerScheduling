@@ -260,7 +260,7 @@ def runGeneticAlgorithm(s, vG, vP, g, p, pa):
     sortState()
     i = 0
 
-    while i < 25:
+    while i < 50:
         startlen = len(state)
         print("Generation "+str(i))
         fw = fWert()
